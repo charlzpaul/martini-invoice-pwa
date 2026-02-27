@@ -36,7 +36,7 @@ export function GoogleAuth() {
     }
 
     return (
-        <Button onClick={() => login()}>
+        <Button onClick={() => login()} size="lg">
             Sign in with Google
         </Button>
     );

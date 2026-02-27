@@ -14,67 +14,67 @@ export function MartiniLoading() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#10B981]/10 to-[#F59E0B]/10 dark:from-[#10B981]/20 dark:to-[#F59E0B]/20">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-primary/20 dark:to-secondary/20">
       <div className="relative">
         {/* Martini Glass */}
-        <svg 
-          width="120" 
-          height="180" 
-          viewBox="0 0 120 180" 
+        <svg
+          width="120"
+          height="180"
+          viewBox="0 0 120 180"
           className="animate-pulse"
         >
           {/* Glass Stem */}
-          <line 
-            x1="60" 
-            y1="120" 
-            x2="60" 
-            y2="160" 
-            stroke="#1F2937" 
-            strokeWidth="4" 
+          <line
+            x1="60"
+            y1="120"
+            x2="60"
+            y2="160"
+            stroke="rgb(71, 48, 33)"
+            strokeWidth="4"
             strokeLinecap="round"
           />
           {/* Glass Base */}
-          <ellipse 
-            cx="60" 
-            cy="160" 
-            rx="30" 
-            ry="8" 
-            fill="#1F2937"
+          <ellipse
+            cx="60"
+            cy="160"
+            rx="30"
+            ry="8"
+            fill="rgb(71, 48, 33)"
           />
           {/* Glass Body */}
-          <path 
-            d="M30 20 Q30 120 60 120 Q90 120 90 20 Z" 
-            fill="none" 
-            stroke="#1F2937" 
-            strokeWidth="6" 
+          <path
+            d="M30 20 Q30 120 60 120 Q90 120 90 20 Z"
+            fill="none"
+            stroke="rgb(71, 48, 33)"
+            strokeWidth="6"
             strokeLinecap="round"
           />
           {/* Liquid Line */}
-          <path 
-            d="M35 35 Q35 110 60 110 Q85 110 85 35 Z" 
-            fill="#10B981" 
+          <path
+            d="M35 35 Q35 110 60 110 Q85 110 85 35 Z"
+            fill="rgb(125, 157, 93)"
             opacity="0.7"
           />
           {/* Olive */}
-          <circle 
-            cx="60" 
-            cy="40" 
-            r="8" 
-            fill="#10B981"
-            stroke="#047857"
+          <circle
+            cx="60"
+            cy="40"
+            r="8"
+            fill="rgb(125, 157, 93)"
+            stroke="rgb(91, 125, 65)"
             strokeWidth="2"
           />
           {/* Olive Pit */}
-          <circle 
-            cx="60" 
-            cy="40" 
-            r="3" 
-            fill="#065F46"
+          <circle
+            cx="60"
+            cy="40"
+            r="3"
+            fill="rgb(65, 95, 45)"
           />
           {/* Sparkles */}
           <g className="sparkles">
             {[0, 1, 2].map((i) => (
-              <g 
+              <g
                 key={i}
                 className="sparkle"
                 style={{
@@ -82,20 +82,20 @@ export function MartiniLoading() {
                   transformOrigin: `${30 + i * 30}px ${40 + i * 20}px`
                 }}
               >
-                <line 
-                  x1={30 + i * 30} 
-                  y1={40 + i * 20} 
-                  x2={30 + i * 30} 
-                  y2={30 + i * 20} 
-                  stroke="#F59E0B" 
+                <line
+                  x1={30 + i * 30}
+                  y1={40 + i * 20}
+                  x2={30 + i * 30}
+                  y2={30 + i * 20}
+                  stroke="rgb(237, 137, 23)"
                   strokeWidth="2"
                 />
-                <line 
-                  x1={30 + i * 30} 
-                  y1={40 + i * 20} 
-                  x2={30 + i * 30 + 8} 
-                  y2={40 + i * 20 - 8} 
-                  stroke="#F59E0B" 
+                <line
+                  x1={30 + i * 30}
+                  y1={40 + i * 20}
+                  x2={30 + i * 30 + 8}
+                  y2={40 + i * 20 - 8}
+                  stroke="rgb(237, 137, 23)"
                   strokeWidth="2"
                 />
               </g>
@@ -115,12 +115,12 @@ export function MartiniLoading() {
       </div>
 
       {/* App Name */}
-      <h1 className="mt-8 text-3xl font-bold bg-gradient-to-r from-[#10B981] to-[#F59E0B] bg-clip-text text-transparent">
+      <h1 className="mt-8 text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
         Martini Shot Invoices
       </h1>
       
       {/* Loading Text */}
-      <p className="mt-4 text-[#6B7280] dark:text-[#9CA3AF] animate-pulse">
+      <p className="mt-4 text-muted-foreground animate-pulse">
         {loadingText}
       </p>
 
@@ -129,7 +129,7 @@ export function MartiniLoading() {
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="w-2 h-2 rounded-full bg-[#10B981] animate-bounce"
+            className="w-2 h-2 rounded-full bg-primary animate-bounce"
             style={{ animationDelay: `${i * 0.15}s` }}
           />
         ))}

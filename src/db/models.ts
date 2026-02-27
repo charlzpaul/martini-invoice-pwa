@@ -27,6 +27,9 @@ export interface CanvasLabel {
   x: number;
   y: number;
   fontSize: number; // Added for more control
+  fontFamily?: string; // Font family for the label
+  width?: number; // Optional width for resizable labels
+  height?: number; // Optional height for resizable labels
 }
 
 /**
@@ -57,6 +60,8 @@ export interface Customer {
   email: string;
   phone: string;
   taxId?: string; // Optional as not all customers may have one
+  createdAt: string; // ISO 8601 date string
+  updatedAt: string; // ISO 8601 date string
 }
 
 /**
@@ -66,7 +71,10 @@ export interface Product {
   id: string;
   name: string;
   defaultRate: number;
+  defaultQuantity: number;
   unit: 'hour' | 'item' | 'service';
+  createdAt: string; // ISO 8601 date string
+  updatedAt: string; // ISO 8601 date string
 }
 
 /**
@@ -81,12 +89,12 @@ export interface LineItem {
 }
 
 /**
- * Represents the main invoice document. The status determines its mutability.
- * 'DRAFT' invoices can be edited.
- * 'LOCKED' invoices are finalized and cannot be changed.
+ * Represents the main invoice document.
  */
 export interface Invoice {
   id:string;
+  invoiceNumber?: string; // Auto-generated invoice number (read-only)
+  nickname?: string; // User-provided nickname for the invoice
   templateId: string;
   customerId: string;
   date: string; // ISO 8601 date string
@@ -96,7 +104,6 @@ export interface Invoice {
   subtotal: number;
   taxAmount: number;
   grandTotal: number;
-  status: 'DRAFT' | 'LOCKED';
   createdAt: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
 }

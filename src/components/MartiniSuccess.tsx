@@ -35,13 +35,13 @@ export function MartiniSuccess() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#10B981]/10 to-[#F59E0B]/10 dark:from-[#10B981]/20 dark:to-[#F59E0B]/20">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-primary/20 dark:to-secondary/20">
       <div className="float">
         {/* Success Checkmark Circle */}
-        <svg 
-          width="120" 
-          height="120" 
-          viewBox="0 0 120 120" 
+        <svg
+          width="120"
+          height="120"
+          viewBox="0 0 120 120"
           className="mb-8"
         >
           {/* Outer Circle */}
@@ -50,7 +50,7 @@ export function MartiniSuccess() {
             cy="60"
             r="50"
             fill="none"
-            stroke="#10B981"
+            stroke="rgb(125, 157, 93)"
             strokeWidth="4"
             className="shimmer"
           />
@@ -68,7 +68,7 @@ export function MartiniSuccess() {
           <path
             d="M40 60 L55 75 L80 45"
             fill="none"
-            stroke="#10B981"
+            stroke="rgb(125, 157, 93)"
             strokeWidth="6"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -78,72 +78,72 @@ export function MartiniSuccess() {
           {/* Gradient Definition */}
           <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#10B981" />
-              <stop offset="100%" stopColor="#F59E0B" />
+              <stop offset="0%" stopColor="rgb(125, 157, 93)" />
+              <stop offset="100%" stopColor="rgb(237, 137, 23)" />
             </linearGradient>
           </defs>
         </svg>
 
         {/* Martini Glass Icon */}
-        <svg 
-          width="80" 
-          height="120" 
-          viewBox="0 0 80 120" 
+        <svg
+          width="80"
+          height="120"
+          viewBox="0 0 80 120"
           className="mb-6"
         >
           {/* Glass Stem */}
-          <line 
-            x1="40" 
-            y1="80" 
-            x2="40" 
-            y2="110" 
-            stroke="#1F2937" 
-            strokeWidth="3" 
+          <line
+            x1="40"
+            y1="80"
+            x2="40"
+            y2="110"
+            stroke="rgb(71, 48, 33)"
+            strokeWidth="3"
             strokeLinecap="round"
           />
           {/* Glass Base */}
-          <ellipse 
-            cx="40" 
-            cy="110" 
-            rx="20" 
-            ry="5" 
-            fill="#1F2937"
+          <ellipse
+            cx="40"
+            cy="110"
+            rx="20"
+            ry="5"
+            fill="rgb(71, 48, 33)"
           />
           {/* Glass Body */}
-          <path 
-            d="M20 10 Q20 80 40 80 Q60 80 60 10 Z" 
-            fill="none" 
-            stroke="#1F2937" 
-            strokeWidth="4" 
+          <path
+            d="M20 10 Q20 80 40 80 Q60 80 60 10 Z"
+            fill="none"
+            stroke="rgb(71, 48, 33)"
+            strokeWidth="4"
             strokeLinecap="round"
           />
           {/* Liquid */}
-          <path 
-            d="M23 20 Q23 70 40 70 Q57 70 57 20 Z" 
-            fill="#10B981" 
+          <path
+            d="M23 20 Q23 70 40 70 Q57 70 57 20 Z"
+            fill="rgb(125, 157, 93)"
             opacity="0.6"
           />
           {/* Olive with Twist */}
           <g className="sparkle">
-            <circle 
-              cx="40" 
-              cy="25" 
-              r="6" 
-              fill="#10B981"
-              stroke="#047857"
+            <circle
+              cx="40"
+              cy="25"
+              r="6"
+              fill="rgb(125, 157, 93)"
+              stroke="rgb(91, 125, 65)"
               strokeWidth="1.5"
             />
-            <circle 
-              cx="40" 
-              cy="25" 
-              r="2.5" 
-              fill="#065F46"
+            <circle
+              cx="40"
+              cy="25"
+              r="2.5"
+              fill="rgb(65, 95, 45)"
             />
             {/* Olive Twist */}
             <path
               d="M40 19 Q44 21 44 25"
               fill="none"
-              stroke="#F59E0B"
+              stroke="rgb(237, 137, 23)"
               strokeWidth="1"
               strokeLinecap="round"
             />
@@ -161,10 +161,10 @@ export function MartiniSuccess() {
       </div>
 
       {/* Success Message */}
-      <h2 className="text-3xl font-bold text-[#1F2937] dark:text-[#FAFAFA] mb-2">
+      <h2 className="text-3xl font-bold text-foreground mb-2">
         Martini Shot Invoices
       </h2>
-      <p className="text-lg text-[#6B7280] dark:text-[#9CA3AF]">
+      <p className="text-lg text-muted-foreground">
         All changes saved successfully!
       </p>
 
@@ -173,7 +173,7 @@ export function MartiniSuccess() {
         {[...Array(8)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-2 h-2 rounded-full bg-[#F59E0B] sparkle"
+            className="absolute w-2 h-2 rounded-full bg-secondary sparkle"
             style={{
               left: `${10 + (i * 12)}%`,
               top: `${10 + (i * 8)}%`,

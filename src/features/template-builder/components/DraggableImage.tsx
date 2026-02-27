@@ -14,13 +14,12 @@ interface DraggableImageProps {
 export function DraggableImage({ image, isSelected }: DraggableImageProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: image.id,
+    disabled: true, // Dragging disabled for images
   });
 
-  const { setSelectedItemId, updateActiveTemplate, activeTemplate } = useTemplateStore(state => ({
-      setSelectedItemId: state.setSelectedItemId,
-      updateActiveTemplate: state.updateActiveTemplate,
-      activeTemplate: state.activeTemplate,
-  }));
+  const setSelectedItemId = useTemplateStore((state) => state.setSelectedItemId);
+  const updateActiveTemplate = useTemplateStore((state) => state.updateActiveTemplate);
+  const activeTemplate = useTemplateStore((state) => state.activeTemplate);
 
   const style = transform
     ? {
@@ -51,7 +50,9 @@ export function DraggableImage({ image, isSelected }: DraggableImageProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="absolute"
+      {...listeners}
+      {...attributes}
+      className={`absolute cursor-default`}
       onClick={(e) => {
         e.stopPropagation(); // Prevent canvas click from unselecting
         setSelectedItemId(image.id);
@@ -66,7 +67,7 @@ export function DraggableImage({ image, isSelected }: DraggableImageProps) {
             isSelected && "border-blue-500 border-dashed"
         )}
       >
-        <div {...listeners} {...attributes} className="w-full h-full cursor-grab active:cursor-grabbing">
+        <div className="w-full h-full">
             <img
                 src={image.base64Data}
                 alt="template element"
@@ -75,7 +76,7 @@ export function DraggableImage({ image, isSelected }: DraggableImageProps) {
                     height: '100%',
                     opacity: image.opacity,
                 }}
-                className="pointer-events-none" 
+                className="pointer-events-none"
             />
         </div>
       </Resizable>

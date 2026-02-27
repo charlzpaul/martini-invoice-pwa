@@ -8,7 +8,13 @@ export async function generatePdfForInvoice(
     invoice: Invoice,
     template: Template
 ): Promise<Blob> {
-    const pdfBlob = await pdf(<InvoiceDocument invoice={invoice} template={template} />).toBlob();
+    // Load customer data before generating PDF
+    let customer = null;
+    if (invoice.customerId) {
+        customer = await dbApi.getCustomerById(invoice.customerId);
+    }
+    
+    const pdfBlob = await pdf(<InvoiceDocument invoice={invoice} template={template} customer={customer} />).toBlob();
     return pdfBlob;
 }
 

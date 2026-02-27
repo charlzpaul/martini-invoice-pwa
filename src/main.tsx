@@ -42,14 +42,16 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, { hasError:
 
 function LoadingFallback() {
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      height: '100vh',
-      color: '#1f2937'
-    }}>
+    <div
+      className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh'
+      }}
+    >
       <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🥃</div>
       <p>Loading Martini Shot...</p>
     </div>

@@ -6,11 +6,11 @@ import { useTemplateStore } from '@/features/template-builder/store/useTemplateS
 import { AppLayout } from '@/app/AppLayout';
 import { HeaderForm } from './components/HeaderForm';
 import { LineItemsTable } from './components/LineItemsTable';
-import { PDFPreviewModal } from '@/features/pdf/PDFPreviewModal';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useUnsavedChangesGuard } from '@/hooks/useUnsavedChangesGuard';
 import * as dbApi from '@/db/api';
+import { Home } from 'lucide-react';
 
 export function InvoiceBuilderPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,12 +24,11 @@ export function InvoiceBuilderPage() {
     createNewInvoice,
     saveInvoice,
     saveAsCopy,
-    generatePdf,
   } = useInvoiceStore();
   const { activeTemplate, loadTemplate } = useTemplateStore();
-  const [showPdfModal, setShowPdfModal] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
-  useUnsavedChangesGuard(isDirty && activeInvoice?.status !== 'LOCKED');
+  useUnsavedChangesGuard(isDirty);
 
   useEffect(() => {
     if (id) {
@@ -48,7 +47,7 @@ export function InvoiceBuilderPage() {
     }
   }, [activeInvoice?.templateId, activeTemplate, loadTemplate]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!activeInvoice?.customerId || !activeInvoice?.templateId) {
         toast.error("Validation Error", {
             description: "Please select a customer and a template before saving.",
@@ -56,16 +55,14 @@ export function InvoiceBuilderPage() {
         return;
     }
     
-    toast.promise(saveInvoice, {
-      loading: 'Saving invoice...',
-      success: (saved) => {
-        if (id === 'new' && saved?.id) {
-            navigate(`/invoice/${saved.id}`, { replace: true });
-        }
-        return 'Invoice saved successfully!';
-      },
-      error: 'Failed to save invoice.',
-    });
+    try {
+      toast.loading('Saving invoice...');
+      await saveInvoice();
+      // Navigate directly to home page without showing success message
+      navigate('/');
+    } catch (error) {
+      toast.error('Failed to save invoice.');
+    }
   };
 
   const handleSaveAsCopy = () => {
@@ -88,51 +85,201 @@ export function InvoiceBuilderPage() {
   };
 
   const handleGeneratePdf = async () => {
-    if (activeInvoice?.id === 'new') {
-        toast.error("Save Required", {
-            description: "Please save the invoice before generating a PDF.",
-        });
-        return;
+    console.log('1. Generate PDF button clicked');
+    
+    // Prevent multiple clicks
+    if (isGeneratingPdf) {
+      console.log('PDF generation already in progress');
+      return;
     }
     
+    // Show warning about potential browser hanging
+    toast.warning('PDF generation may temporarily freeze the browser. Please wait...', {
+      duration: 5000,
+    });
+    
+    setIsGeneratingPdf(true);
+    
+    // Create a loading toast with ID so we can update it
+    const loadingToastId = toast.loading('Preparing PDF generation...');
+    
     try {
-        await generatePdf();
-        setShowPdfModal(true);
+        // Add a timeout to prevent hanging - use a more aggressive timeout
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('PDF generation timeout after 15 seconds')), 15000);
+        });
+        
+        // Check if invoice needs to be saved
+        console.log('2. Checking if invoice needs to be saved');
+        if (activeInvoice?.id === 'new' || isDirty) {
+            // Validate required fields before saving
+            if (!activeInvoice?.customerId || !activeInvoice?.templateId) {
+                toast.dismiss(loadingToastId);
+                setIsGeneratingPdf(false);
+                toast.error("Validation Error", {
+                    description: "Please select a customer and a template before generating a PDF.",
+                });
+                return;
+            }
+            
+            toast.loading('Saving invoice before generating PDF...');
+            const savedInvoice = await saveInvoice();
+            
+            if (!savedInvoice) {
+                toast.dismiss(loadingToastId);
+                setIsGeneratingPdf(false);
+                toast.error("Failed to save invoice");
+                return;
+            }
+            
+            // Update active invoice with saved data
+            // The store should already update activeInvoice, but we need to wait for it
+            toast.success('Invoice saved successfully');
+        }
+        
+        // Generate PDF directly without storing in DB
+        if (!activeInvoice?.templateId) {
+            toast.dismiss(loadingToastId);
+            setIsGeneratingPdf(false);
+            toast.error("Template Required", {
+                description: "Please select a template before generating a PDF.",
+            });
+            return;
+        }
+        
+        const template = await dbApi.getTemplateById(activeInvoice.templateId);
+        if (!template) {
+            toast.dismiss(loadingToastId);
+            setIsGeneratingPdf(false);
+            toast.error("Template Not Found", {
+                description: "Could not find the selected template.",
+            });
+            return;
+        }
+
+        // Load customer data
+        let customer = null;
+        if (activeInvoice.customerId) {
+            customer = await dbApi.getCustomerById(activeInvoice.customerId);
+        }
+
+        // Import PDF generator dynamically
+        console.log('5. Importing PDF generator');
+        toast.loading('Loading PDF engine...', { id: loadingToastId });
+        
+        let pdfModule;
+        try {
+          pdfModule = await import('@react-pdf/renderer');
+          console.log('5a. PDF module loaded');
+        } catch (importError) {
+          console.error('Failed to import @react-pdf/renderer:', importError);
+          toast.dismiss(loadingToastId);
+          setIsGeneratingPdf(false);
+          throw importError;
+        }
+        const { pdf } = pdfModule;
+        
+        // Use the proper InvoiceDocument that supports templates
+        console.log('5b. Loading InvoiceDocument');
+        toast.loading('Preparing document...', { id: loadingToastId });
+        
+        let DocumentComponent;
+        try {
+          const invoiceDocModule = await import('@/features/pdf/InvoiceDocument');
+          DocumentComponent = invoiceDocModule.InvoiceDocument;
+          console.log('5c. InvoiceDocument loaded');
+        } catch (importError) {
+          console.error('Failed to import InvoiceDocument:', importError);
+          // Fall back to SimpleInvoiceDocument as backup
+          const simpleDocModule = await import('@/features/pdf/SimpleInvoiceDocument');
+          DocumentComponent = simpleDocModule.SimpleInvoiceDocument;
+          console.log('5c. SimpleInvoiceDocument loaded (fallback)');
+        }
+        
+        console.log('6. Creating PDF document');
+        toast.loading('Generating PDF... (this may take a moment)', { id: loadingToastId });
+        
+        // Yield control to the browser before starting heavy work
+        await new Promise(resolve => setTimeout(resolve, 0));
+        
+        // Use toBlob() - it's the standard API
+        const pdfPromise = pdf(<DocumentComponent invoice={activeInvoice} template={template} customer={customer} />).toBlob();
+        console.log('6a. PDF promise created');
+        
+        try {
+          const pdfBlob = await Promise.race([pdfPromise, timeoutPromise]) as Blob;
+          console.log('7. PDF blob created, size:', pdfBlob.size);
+          
+          const url = URL.createObjectURL(pdfBlob);
+          console.log('8. URL created:', url.substring(0, 50) + '...');
+          
+          toast.dismiss(loadingToastId);
+          setIsGeneratingPdf(false);
+          
+          // Always open PDF in new tab for both mobile and laptop
+          try {
+            const newWindow = window.open(url, '_blank');
+            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+              // Popup blocked or failed, fallback to download
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `invoice-${activeInvoice.invoiceNumber || 'document'}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              toast.success('PDF downloaded (popup was blocked)');
+              console.log('9. PDF downloaded (popup blocked)');
+            } else {
+              toast.success('PDF opened in new tab');
+              console.log('9. PDF opened in new tab');
+            }
+          } catch (windowError) {
+            console.error('Error opening PDF:', windowError);
+            // Fallback to download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `invoice-${activeInvoice.invoiceNumber || 'document'}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            toast.success('PDF downloaded');
+            console.log('9. PDF downloaded (fallback)');
+          }
+          
+          // Clean up URL object after a delay
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          console.log('10. Cleanup scheduled');
+        } catch (raceError) {
+          toast.dismiss(loadingToastId);
+          setIsGeneratingPdf(false);
+          if (raceError instanceof Error && raceError.message.includes('timeout')) {
+            console.error('PDF generation timed out after 15 seconds');
+            toast.error('PDF generation timed out. The document may be too complex or there may be an issue with images.');
+          } else {
+            throw raceError;
+          }
+        }
+        
     } catch (error) {
-        // Error is already handled by the store
+        toast.dismiss(loadingToastId);
+        setIsGeneratingPdf(false);
+        console.error('Error generating PDF:', error);
+        if (error instanceof Error) {
+          console.error('Error stack:', error.stack);
+        }
+        toast.error('Failed to generate PDF');
     }
   };
   
-  const handleShare = async () => {
-    if (!activeInvoice || activeInvoice.status !== 'LOCKED') return;
 
-    const pdfRecord = await dbApi.getGeneratedPdfByInvoiceId(activeInvoice.id);
-    if (!pdfRecord) {
-        toast.error("PDF not found", { description: "Could not find the generated PDF to share."});
-        return;
+  const handleGoHome = () => {
+    if (isDirty && !window.confirm(
+      'You have unsaved changes. Are you sure you want to leave? Your changes will be lost.'
+    )) {
+      return;
     }
-
-    const file = new File([pdfRecord.blob], `Invoice-${activeInvoice.id.substring(0,8)}.pdf`, { type: 'application/pdf' });
-
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-            await navigator.share({
-                files: [file],
-                title: `Invoice ${activeInvoice.id}`,
-                text: `Here is the invoice ${activeInvoice.id}.`,
-            });
-            toast.success('PDF shared successfully');
-        } catch (error) {
-            if ((error as Error).name !== 'AbortError') {
-                toast.error("Share failed", { description: "Could not share the PDF."});
-            }
-        }
-    } else {
-        toast.warning("Share not supported", { description: "Your browser does not support sharing files."});
-    }
+    navigate('/');
   };
-
-  const isLocked = activeInvoice?.status === 'LOCKED';
 
   return (
     <AppLayout>
@@ -140,24 +287,37 @@ export function InvoiceBuilderPage() {
       {error && <p className="text-destructive">Error: {error}</p>}
       {activeInvoice && (
         <div className="space-y-8">
-          <header className="flex justify-between items-start">
+          <header className="flex flex-col md:flex-row justify-between items-start gap-4">
             <div>
                 <h1 className="text-3xl font-bold">Invoice Builder</h1>
                 <p className="text-muted-foreground">
                     {activeInvoice.id === 'new'
                         ? 'Creating a new invoice'
-                        : `Editing Invoice #${activeInvoice.id.substring(0, 8)}`
+                        : `Editing ${activeInvoice.nickname || `Invoice ${activeInvoice.invoiceNumber || '#' + activeInvoice.id.substring(0, 8)}`}`
                     }
-                    {isLocked && <span className="text-destructive font-semibold ml-2">(LOCKED)</span>}
                 </p>
             </div>
-            <div className="flex space-x-2">
-                {isLocked && <Button variant="outline" onClick={handleShare}>Share</Button>}
-                <Button variant="outline" onClick={handleGeneratePdf} disabled={isLocked}>
-                    {isLocked ? 'PDF Generated' : 'Generate PDF'}
-                </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={handleGoHome}
+                className="flex items-center gap-2"
+              >
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">Home</span>
+                <span className="sm:hidden">Home</span>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleGeneratePdf}
+                disabled={isGeneratingPdf}
+              >
+                {isGeneratingPdf ? 'Generating PDF...' : 'Generate PDF'}
+              </Button>
+              {id !== 'new' && (
                 <Button variant="secondary" onClick={handleSaveAsCopy}>Save as Copy</Button>
-                <Button onClick={handleSave} disabled={isLocked}>Save Invoice</Button>
+              )}
+              <Button onClick={handleSave}>Save Invoice</Button>
             </div>
           </header>
           
@@ -165,13 +325,6 @@ export function InvoiceBuilderPage() {
           <LineItemsTable />
         </div>
       )}
-      
-      <PDFPreviewModal
-        isOpen={showPdfModal}
-        onClose={() => setShowPdfModal(false)}
-        invoice={activeInvoice}
-        template={activeTemplate}
-      />
     </AppLayout>
   );
 }

@@ -1,0 +1,100 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - button "Sign in with Google" [ref=e6]
+  - main [ref=e7]:
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - heading "Template Builder" [level=1] [ref=e11]
+          - paragraph [ref=e12]: "Editing: Untitled Template"
+        - button "Home" [ref=e13]:
+          - img [ref=e14]
+          - generic [ref=e17]: Home
+      - generic [ref=e18]:
+        - generic [ref=e20]:
+          - generic [ref=e21]:
+            - generic [ref=e22]:
+              - heading "Template Settings" [level=3] [ref=e23]
+              - generic [ref=e24]:
+                - text: Template Name
+                - textbox "Template Name Template Name" [ref=e25]: Untitled Template
+              - generic [ref=e26]:
+                - text: Paper Size
+                - combobox "Paper Size Paper Size" [ref=e27]:
+                  - generic: A4
+                  - img [ref=e28]
+            - generic [ref=e30]:
+              - button "Add Image" [ref=e31]
+              - button "Add Default Block" [ref=e33]:
+                - generic [ref=e34]: Add Default Block
+                - img [ref=e35]
+            - generic [ref=e37]:
+              - heading "Layers & Styles" [level=3] [ref=e38]
+              - generic [ref=e39]:
+                - generic [ref=e40] [cursor=pointer]:
+                  - generic [ref=e41]:
+                    - img [ref=e42]
+                    - generic [ref=e44]: "Invoice #: INV-2023-001"
+                  - generic [ref=e45]:
+                    - combobox [ref=e47]:
+                      - generic: Arial
+                      - img [ref=e48]
+                    - button [ref=e50]:
+                      - img [ref=e51]
+                - generic [ref=e54] [cursor=pointer]:
+                  - generic [ref=e55]:
+                    - img [ref=e56]
+                    - generic [ref=e58]: "Date: January 1, 2023"
+                  - generic [ref=e59]:
+                    - combobox [ref=e61]:
+                      - generic: Arial
+                      - img [ref=e62]
+                    - button [ref=e64]:
+                      - img [ref=e65]
+                - generic [ref=e68] [cursor=pointer]:
+                  - generic [ref=e69]:
+                    - img [ref=e70]
+                    - generic [ref=e72]: John Doe 123 Main St, City, St
+                  - generic [ref=e73]:
+                    - combobox [ref=e75]:
+                      - generic: Arial
+                      - img [ref=e76]
+                    - button [ref=e78]:
+                      - img [ref=e79]
+                - generic [ref=e82] [cursor=pointer]:
+                  - generic [ref=e83]:
+                    - img [ref=e84]
+                    - generic [ref=e86]: "Subtotal: $0.00 Tax 1 (10%): $"
+                  - generic [ref=e87]:
+                    - combobox [ref=e89]:
+                      - generic: Arial
+                      - img [ref=e90]
+                    - button [ref=e92]:
+                      - img [ref=e93]
+                - generic [ref=e97] [cursor=pointer]:
+                  - img [ref=e98]
+                  - generic [ref=e99]: Line Items Area
+          - generic [ref=e100]:
+            - button "Preview" [ref=e101]
+            - button "Save as Copy" [ref=e102]
+            - button "Save Changes" [ref=e103]
+        - generic [ref=e104]:
+          - generic [ref=e106]:
+            - 'button "Invoice #: INV-2023-001" [disabled] [ref=e107]':
+              - generic [ref=e109]: "Invoice #: INV-2023-001"
+            - 'button "Date: January 1, 2023" [disabled] [ref=e118]':
+              - generic [ref=e120]: "Date: January 1, 2023"
+            - 'button "John Doe 123 Main St, City, State 12345 Phone: (555) 123-4567 Tax ID: 123-45-6789" [disabled] [ref=e129]':
+              - generic [ref=e131]: "John Doe 123 Main St, City, State 12345 Phone: (555) 123-4567 Tax ID: 123-45-6789"
+            - 'button "Subtotal: $0.00 Tax 1 (10%): $0.00 Tax 2 (5%): $0.00 Total: $0.00" [disabled] [ref=e140]':
+              - generic [ref=e142]: "Subtotal: $0.00 Tax 1 (10%): $0.00 Tax 2 (5%): $0.00 Total: $0.00"
+            - button "Line Items Area Drag to move • Drag bottom edge to resize This is where invoice line items will appear" [disabled] [ref=e152]:
+              - generic [ref=e153]:
+                - paragraph [ref=e154]: Line Items Area
+                - paragraph [ref=e155]: Drag to move • Drag bottom edge to resize
+                - paragraph [ref=e156]: This is where invoice line items will appear
+          - status [ref=e158]
+```

@@ -15,10 +15,10 @@ All theme colors are defined as CSS custom properties in [`src/index.css`](src/i
 ```css
 :root {
   /* Martini Shot Color Palette */
-  --martini-primary: 158 48% 46%;        /* Emerald Green - Olive */
-  --martini-secondary: 38 92% 50%;       /* Gold/Amber - Garnish */
-  --martini-dark: 28 16% 21%;            /* Deep Charcoal - Glass */
-  --martini-light: 0 0% 98%;             /* Cream/Off-white - Cocktail */
+  --martini-primary: 90 26% 49%;         /* Emerald Green - Olive = rgb(125, 157, 93) */
+  --martini-secondary: 38 92% 50%;       /* Gold/Amber - Garnish = rgb(237, 137, 23) */
+  --martini-dark: 24 37% 20%;            /* Deep Charcoal - Glass = rgb(71, 48, 33) */
+  --martini-light: 0 0% 99%;             /* Cream/Off-white - Cocktail = rgb(252, 252, 252) */
   --martini-accent: 174 83% 41%;         /* Teal - Martini color */
 
   /* Shadcn/ui Theme Variables */
@@ -81,10 +81,10 @@ All theme colors are defined as CSS custom properties in [`src/index.css`](src/i
 
 | Variable | HSL Value | Description |
 |----------|-----------|-------------|
-| `--martini-primary` | `158 48% 46%` | **Olive Green** - Main brand color for primary buttons, links, and highlights |
-| `--martini-secondary` | `38 92% 50%` | **Gold/Amber** - Secondary color for accents, highlights, and success states |
-| `--martini-dark` | `28 16% 21%` | **Deep Charcoal** - Dark text and background in dark mode |
-| `--martini-light` | `0 0% 98%` | **Cream/Off-white** - Background in light mode, dark in dark mode |
+| `--martini-primary` | `90 26% 49%` | **Olive Green** - Main brand color for primary buttons, links, and highlights = rgb(125, 157, 93) |
+| `--martini-secondary` | `38 92% 50%` | **Gold/Amber** - Secondary color for accents, highlights, and success states = rgb(237, 137, 23) |
+| `--martini-dark` | `24 37% 20%` | **Deep Charcoal** - Dark text and background in dark mode = rgb(71, 48, 33) |
+| `--martini-light` | `0 0% 99%` | **Cream/Off-white** - Background in light mode, dark in dark mode = rgb(252, 252, 252) |
 | `--martini-accent` | `174 83% 41%` | **Teal** - Accent color for special highlights and interactive elements |
 
 ## Using the Theme
@@ -194,19 +194,19 @@ To add custom colors or extend the theme:
 ## Color Preview
 
 ### Primary Color (Olive Green)
-`hsl(158, 48%, 46%)` - #7D9D5D
+`hsl(90, 26%, 49%)` - #7D9D5D = rgb(125, 157, 93)
 
 ### Secondary Color (Gold/Amber)
-`hsl(38, 92%, 50%)` - #E5A835
+`hsl(38, 92%, 50%)` - #ED8917 = rgb(237, 137, 23)
 
 ### Accent Color (Teal)
 `hsl(174, 83%, 41%)` - #5BC3B4
 
 ### Dark Mode Background
-`hsl(28, 16%, 21%)` - #473018
+`hsl(28, 16%, 21%)` - #473018 = rgb(71, 48, 33)
 
 ### Light Mode Background
-`hsl(0, 0%, 98%)` - #FDFDFD
+`hsl(0, 0%, 98%)` - #FCFCFC = rgb(252, 252, 252)
 
 ## Accessibility
 

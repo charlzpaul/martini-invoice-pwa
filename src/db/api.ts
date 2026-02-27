@@ -84,13 +84,13 @@ export const deleteTemplate = (id: string) => templateStore.removeItem(id);
 // Customers
 export const getCustomers = () => getAll<Customer>(customerStore);
 export const getCustomerById = (id: string) => customerStore.getItem<Customer>(id);
-export const saveCustomer = (customer: Omit<Customer, 'id'> & { id?: string }) => saveItem<Customer>(customerStore, customer as any);
+export const saveCustomer = (customer: Omit<Customer, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => saveItem<Customer>(customerStore, customer);
 export const deleteCustomer = (id: string) => customerStore.removeItem(id);
 
 // Products
 export const getProducts = () => getAll<Product>(productStore);
 export const getProductById = (id: string) => productStore.getItem<Product>(id);
-export const saveProduct = (product: Omit<Product, 'id'> & { id?: string }) => saveItem<Product>(productStore, product as any);
+export const saveProduct = (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => saveItem<Product>(productStore, product);
 export const deleteProduct = (id: string) => productStore.removeItem(id);
 
 // Invoices

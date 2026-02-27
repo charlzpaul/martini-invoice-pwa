@@ -39,6 +39,8 @@ async function performSeeding() {
     email: 'john.doe@example.com',
     address: '123 Main Street, Anytown, USA',
     phone: '555-123-4567',
+    createdAt: now,
+    updatedAt: now,
   };
   await customerStore.setItem(customerId, defaultCustomer);
   console.log('Seeded customer:', defaultCustomer);
@@ -49,7 +51,10 @@ async function performSeeding() {
     id: productId,
     name: 'Web Development Services',
     defaultRate: 100,
+    defaultQuantity: 1,
     unit: 'hour',
+    createdAt: now,
+    updatedAt: now,
   };
   await productStore.setItem(productId, defaultProduct);
   console.log('Seeded product:', defaultProduct);
@@ -75,6 +80,8 @@ async function performSeeding() {
   const invoiceId = crypto.randomUUID();
   const defaultInvoice: Invoice = {
     id: invoiceId,
+    invoiceNumber: 'JDO-250226-1234',
+    nickname: 'Project Scoping Invoice',
     customerId: customerId,
     templateId: templateId,
     date: now,
@@ -85,7 +92,6 @@ async function performSeeding() {
     subtotal: 500,
     taxAmount: 50,
     grandTotal: 550,
-    status: 'DRAFT',
     createdAt: now,
     updatedAt: now,
   };

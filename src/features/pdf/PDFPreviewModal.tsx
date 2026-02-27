@@ -59,38 +59,71 @@ const styles = StyleSheet.create({
 });
 
 
-function getLabelValue(label: any, invoice: Invoice): string {
+function getLabelValue(label: any, invoice: Invoice, customer?: Customer | null): string {
   switch (label.type) {
     case 'Subtotal':
-      return `Subtotal: ${invoice.subtotal.toFixed(2)}`;
+      return `Subtotal: $${invoice.subtotal.toFixed(2)}`;
     case 'Tax':
-      return `Tax: ${invoice.taxAmount.toFixed(2)}`;
+      return `Tax: $${invoice.taxAmount.toFixed(2)}`;
     case 'Total':
-      return `Total: ${invoice.grandTotal.toFixed(2)}`;
+      return `Total: $${invoice.grandTotal.toFixed(2)}`;
     default:
-      return label.textValue;
+      let text = label.textValue;
+      
+      // Replace invoice number placeholder
+      if (text.includes('INV-2023-001') && invoice.invoiceNumber) {
+        text = text.replace('INV-2023-001', invoice.invoiceNumber);
+      }
+      
+      // Replace date placeholder
+      if (text.includes('January 1, 2023') && invoice.date) {
+        const dateObj = new Date(invoice.date);
+        const formattedDate = dateObj.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        text = text.replace('January 1, 2023', formattedDate);
+      }
+      
+      // Replace customer info placeholder
+      if (customer && text.includes('John Doe')) {
+        const customerText = `Customer:\n${customer.name}\n${customer.address}\n${customer.email}\n${customer.phone}`;
+        text = customerText;
+      }
+      
+      // Replace totals placeholder
+      if (text.includes('Subtotal: $0.00')) {
+        text = text.replace('Subtotal: $0.00', `Subtotal: $${invoice.subtotal.toFixed(2)}`);
+      }
+      if (text.includes('HST (13%): $0.00')) {
+        text = text.replace('HST (13%): $0.00', `HST (13%): $${invoice.taxAmount.toFixed(2)}`);
+      }
+      if (text.includes('Total: $0.00')) {
+        text = text.replace('Total: $0.00', `Total: $${invoice.grandTotal.toFixed(2)}`);
+      }
+      
+      return text;
   }
+}
+
+// Helper function to get react-pdf compatible font family
+// TEMPORARY: Always return Helvetica to debug hanging issue
+function getPdfFontFamily(_fontFamily?: string): string {
+  return 'Helvetica';
 }
 
 interface InvoiceDocumentProps {
   invoice: Invoice;
   template: Template;
+  customer?: Customer | null;
 }
 
-const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({ invoice, template }) => {
-  const [customer, setCustomer] = useState<Customer | null>(null);
-
-  useEffect(() => {
-    async function loadCustomer() {
-      if (invoice.customerId) {
-        const cust = await dbApi.getCustomerById(invoice.customerId);
-        setCustomer(cust);
-      }
-    }
-    loadCustomer();
-  }, [invoice.customerId]);
+const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({ invoice, template, customer }) => {
 
   const paperSize = (template.paperSize === 'Letter' ? 'LETTER' : 'A4') as 'A4' | 'LETTER';
+  // Convert pixel to point (approximate: 1px = 0.75pt at 96 DPI)
+  const pxToPt = 0.75;
 
   return (
     <Document>
@@ -102,10 +135,10 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({ invoice, template }) 
                         src={image.base64Data}
                         style={{
                             ...styles.canvasObject,
-                            left: image.x,
-                            top: image.y,
-                            width: image.currentWidth,
-                            height: image.currentHeight,
+                            left: image.x * pxToPt + 40, // Convert pixels to points and add page padding
+                            top: image.y * pxToPt + 40,
+                            width: Math.max(1, image.currentWidth * pxToPt),
+                            height: Math.max(1, image.currentHeight * pxToPt),
                             opacity: image.opacity,
                         }}
                     />
@@ -115,12 +148,13 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({ invoice, template }) 
                         key={label.id}
                         style={{
                             ...styles.canvasObject,
-                            left: label.x,
-                            top: label.y,
+                            left: label.x * pxToPt + 40, // Convert pixels to points and add page padding
+                            top: label.y * pxToPt + 40,
                             fontSize: label.fontSize,
+                            fontFamily: getPdfFontFamily(label.fontFamily),
                         }}
                     >
-                        {getLabelValue(label, invoice)}
+                        {getLabelValue(label, invoice, customer)}
                     </Text>
                 ))}
 
@@ -129,8 +163,8 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({ invoice, template }) 
                     position: 'absolute',
                     left: 40,
                     right: 40,
-                    top: template.lineItemArea.y,
-                    height: template.lineItemArea.height,
+                    top: template.lineItemArea.y * pxToPt + 40, // Convert pixels to points and add page padding
+                    height: template.lineItemArea.height * pxToPt,
                 }}>
                     <View style={styles.lineItemTable}>
                         {/* Header */}
@@ -159,7 +193,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({ invoice, template }) 
                     <Text>{customer?.phone}</Text>
                 </View>
                 <View style={{ position: 'absolute', top: 40, right: 40, alignItems: 'flex-end' }}>
-                     <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Invoice #{invoice.id.substring(0,8)}</Text>
+                     <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Invoice #{invoice.invoiceNumber || invoice.id.substring(0,8)}</Text>
                     <Text>Date: {new Date(invoice.date).toLocaleDateString()}</Text>
                 </View>
             </Page>
@@ -175,29 +209,46 @@ export function PDFPreviewModal({ isOpen, onClose, invoice, template }: PDFPrevi
     useEffect(() => {
         if (isOpen && invoice && template) {
             setIsGenerating(true);
-            import('@react-pdf/renderer').then(({ pdf }) => {
-                pdf(<InvoiceDocument invoice={invoice} template={template} />)
-                    .toBlob()
-                    .then((blob) => {
-                        setPdfBlob(blob);
-                        setIsGenerating(false);
-                    })
-                    .catch((err) => {
-                        console.error('Error generating PDF:', err);
-                        setIsGenerating(false);
-                        toast.error('Failed to generate PDF preview');
-                    });
-            });
+            
+            // Load customer data before generating PDF
+            const loadCustomerAndGeneratePdf = async () => {
+                let customer = null;
+                if (invoice.customerId) {
+                    customer = await dbApi.getCustomerById(invoice.customerId);
+                }
+                
+                import('@react-pdf/renderer').then(({ pdf }) => {
+                    pdf(<InvoiceDocument invoice={invoice} template={template} customer={customer} />)
+                        .toBlob()
+                        .then((blob) => {
+                            setPdfBlob(blob);
+                            setIsGenerating(false);
+                        })
+                        .catch((err) => {
+                            console.error('Error generating PDF:', err);
+                            setIsGenerating(false);
+                            toast.error('Failed to generate PDF preview');
+                        });
+                });
+            };
+            
+            loadCustomerAndGeneratePdf();
         }
     }, [isOpen, invoice, template]);
 
     const handleDownload = async () => {
-        if (!pdfBlob) return;
+        if (!pdfBlob || !invoice) return;
+
+        // Generate filename with invoice number and datetime stamp
+        const invoiceNumber = invoice.invoiceNumber || `INV-${invoice.id.substring(0, 8)}`;
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0, 19).replace(/[:T]/g, '-'); // YYYY-MM-DD-HH-MM-SS
+        const filename = `INVOICE-${invoiceNumber}-${dateStr}.pdf`;
 
         const url = URL.createObjectURL(pdfBlob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `Invoice-${invoice?.id.substring(0, 8)}.pdf`;
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -209,7 +260,13 @@ export function PDFPreviewModal({ isOpen, onClose, invoice, template }: PDFPrevi
         if (!pdfBlob || !invoice) return;
 
         setIsSharing(true);
-        const file = new File([pdfBlob], `Invoice-${invoice.id.substring(0, 8)}.pdf`, { type: 'application/pdf' });
+        // Generate filename with invoice number and datetime stamp
+        const invoiceNumber = invoice.invoiceNumber || `INV-${invoice.id.substring(0, 8)}`;
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0, 19).replace(/[:T]/g, '-'); // YYYY-MM-DD-HH-MM-SS
+        const filename = `INVOICE-${invoiceNumber}-${dateStr}.pdf`;
+        
+        const file = new File([pdfBlob], filename, { type: 'application/pdf' });
 
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
