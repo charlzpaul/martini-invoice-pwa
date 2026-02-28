@@ -200,7 +200,7 @@ export function SettingsPanel() {
     }
   };
 
-  // Function to resize and compress an image for PDF generation
+  // Function to resize an image for PDF generation with high quality for printing
   const resizeAndCompressImage = (
     img: HTMLImageElement,
     targetWidth: number,
@@ -218,13 +218,21 @@ export function SettingsPanel() {
       return;
     }
     
+    // Use high-quality image rendering settings for printing
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    
     // Draw image onto canvas with the target dimensions
     ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
     
-    // Convert to compressed base64 with reduced quality
-    // Use JPEG format for better compression (even for PNGs)
-    const quality = 0.7; // 70% quality for good balance
-    const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+    // Convert to base64 with high quality for printing
+    // Use original image format to preserve quality (JPEG for photos, PNG for graphics)
+    // For printing, use higher quality (0.95) to maintain good print quality
+    const quality = 0.95; // 95% quality for printing
+    // Check if the original image source is PNG (contains 'png' in data URL)
+    const isPng = img.src.toLowerCase().includes('png');
+    const mimeType = isPng ? 'image/png' : 'image/jpeg';
+    const compressedBase64 = canvas.toDataURL(mimeType, quality);
     
     callback(compressedBase64);
   };
@@ -340,7 +348,7 @@ export function SettingsPanel() {
           // Select the new image
           currentSetSelectedItemId(newImage.id);
           
-          toast.success('Image added successfully (compressed for PDF)');
+          toast.success('Image added successfully with high quality for printing');
         });
       };
       

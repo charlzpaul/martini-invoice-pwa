@@ -56,6 +56,7 @@ export function FeedItem({ item }: FeedItemProps) {
   const [selectedItem, setSelectedItem] = useState<Customer | Product | null>(null);
   const [selectedType, setSelectedType] = useState<'Customer' | 'Product'>('Customer');
   const customers = useStore((state) => state.customers);
+  const templates = useStore((state) => state.templates);
   const currencySymbol = useStore((state) => state.currencySymbol);
 
   const handleClick = () => {
@@ -122,7 +123,9 @@ export function FeedItem({ item }: FeedItemProps) {
       case 'Invoice': {
         const invoice = item as Invoice;
         const customer = customers.find(c => c.id === invoice.customerId);
+        const template = templates.find(t => t.id === invoice.templateId);
         const customerName = customer?.name || 'Unknown Customer';
+        const templateName = template?.name || 'Unknown Template';
         const invoiceNumber = invoice.invoiceNumber || `#${invoice.id.substring(0, 8)}`;
         const nickname = invoice.nickname || customerName;
         
@@ -138,6 +141,7 @@ export function FeedItem({ item }: FeedItemProps) {
                   <div className="text-sm text-muted-foreground space-y-1 mt-1">
                     <div>{customerName}</div>
                     <div>{invoiceNumber}</div>
+                    <div>Template: {templateName}</div>
                   </div>
                 </div>
                 <div className="text-right">
