@@ -116,11 +116,11 @@ export function TotalsBlock({ label, isSelected }: TotalsBlockProps) {
         size={{ width, height }}
         onResizeStop={handleResizeStop}
         className={cn(
-          "relative border-2 border-dashed border-secondary bg-white",
+          "relative border-2 border-dashed border-secondary",
           isSelected && "outline-2 outline-dashed outline-accent outline-offset-2"
         )}
       >
-        <div className="w-full h-full p-2 overflow-auto">
+        <div className="w-full h-full p-2 overflow-auto" style={{ margin: '-2px' }}>
           <div className="space-y-1">
             {/* Subtotal row */}
             <div className="flex justify-between items-center">

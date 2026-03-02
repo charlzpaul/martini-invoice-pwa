@@ -10,174 +10,177 @@
         - generic [ref=e10]:
           - heading "Template Builder" [level=1] [ref=e11]
           - paragraph [ref=e12]: "Editing: Untitled Template"
-        - button "Home" [ref=e13]:
-          - img [ref=e14]
-          - generic [ref=e17]: Home
-      - generic [ref=e18]:
-        - generic [ref=e20]:
-          - generic [ref=e21]:
-            - generic [ref=e22]:
-              - heading "Template Settings" [level=3] [ref=e23]
-              - generic [ref=e24]:
-                - text: Template Name
-                - textbox "Template Name Template Name" [ref=e25]: Untitled Template
-              - generic [ref=e26]:
-                - text: Paper Size
-                - combobox "Paper Size Paper Size" [ref=e27]:
-                  - generic: A4
-                  - img [ref=e28]
+        - generic [ref=e13]:
+          - button "Preview" [ref=e14]
+          - button "Save as Copy" [ref=e15]
+          - button "Save Changes" [ref=e16]
+          - button "Home" [ref=e17]:
+            - img [ref=e18]
+            - generic [ref=e21]: Home
+      - generic [ref=e22]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - heading "Template Settings" [level=3] [ref=e27]
+            - generic [ref=e28]:
+              - text: Template Name
+              - textbox "Template Name Template Name" [ref=e29]: Untitled Template
             - generic [ref=e30]:
-              - button "Add Image" [ref=e31]
-              - button "Add Default Block" [ref=e33]:
-                - generic [ref=e34]: Add Default Block
-                - img [ref=e35]
-            - generic [ref=e37]:
-              - heading "Layers & Styles" [level=3] [ref=e38]
-              - generic [ref=e39]:
-                - generic [ref=e40] [cursor=pointer]:
-                  - generic [ref=e41]:
-                    - img [ref=e42]
-                    - generic [ref=e44]: "Invoice #: INV-2023-001"
-                  - generic [ref=e45]:
-                    - combobox [ref=e47]:
+              - text: Paper Size
+              - combobox "Paper Size Paper Size" [ref=e31]:
+                - generic: A4
+                - img [ref=e32]
+          - generic [ref=e34]:
+            - button "Add Image" [ref=e35]
+            - button "Add Default Block" [ref=e37]:
+              - generic [ref=e38]: Add Default Block
+              - img [ref=e39]
+          - generic [ref=e41]:
+            - heading "Layers & Styles" [level=3] [ref=e42]
+            - generic [ref=e43]:
+              - generic [ref=e44] [cursor=pointer]:
+                - generic [ref=e45]:
+                  - img [ref=e46]
+                  - generic [ref=e48]: Invoice Number Block
+                - generic [ref=e49]:
+                  - generic [ref=e50]:
+                    - combobox [ref=e51]:
                       - generic: Arial
-                      - img [ref=e48]
-                    - button [ref=e50]:
-                      - img [ref=e51]
-                - generic [ref=e54] [cursor=pointer]:
-                  - generic [ref=e55]:
-                    - img [ref=e56]
-                    - generic [ref=e58]: "Date: January 1, 2023"
-                  - generic [ref=e59]:
-                    - combobox [ref=e61]:
+                      - img [ref=e52]
+                    - combobox [ref=e54]:
+                      - generic: 14pt
+                      - img [ref=e55]
+                  - button [ref=e57]:
+                    - img [ref=e58]
+              - generic [ref=e61] [cursor=pointer]:
+                - generic [ref=e62]:
+                  - img [ref=e63]
+                  - generic [ref=e65]: Date Block
+                - generic [ref=e66]:
+                  - generic [ref=e67]:
+                    - combobox [ref=e68]:
                       - generic: Arial
-                      - img [ref=e62]
-                    - button [ref=e64]:
-                      - img [ref=e65]
-                - generic [ref=e68] [cursor=pointer]:
-                  - generic [ref=e69]:
-                    - img [ref=e70]
-                    - generic [ref=e72]: John Doe 123 Main St, City, St
-                  - generic [ref=e73]:
-                    - combobox [ref=e75]:
+                      - img [ref=e69]
+                    - combobox [ref=e71]:
+                      - generic: 14pt
+                      - img [ref=e72]
+                  - button [ref=e74]:
+                    - img [ref=e75]
+              - generic [ref=e78] [cursor=pointer]:
+                - generic [ref=e79]:
+                  - img [ref=e80]
+                  - generic [ref=e82]: Customer Info Block
+                - generic [ref=e83]:
+                  - generic [ref=e84]:
+                    - combobox [ref=e85]:
                       - generic: Arial
-                      - img [ref=e76]
-                    - button [ref=e78]:
-                      - img [ref=e79]
-                - generic [ref=e82] [cursor=pointer]:
-                  - generic [ref=e83]:
-                    - img [ref=e84]
-                    - generic [ref=e88]: "Image: defaul"
-                  - generic [ref=e89]:
-                    - button [disabled]:
-                      - img
-                    - button [disabled]:
-                      - img
-                    - button [ref=e90]:
-                      - img [ref=e91]
-                - generic [ref=e94] [cursor=pointer]:
-                  - generic [ref=e95]:
-                    - img [ref=e96]
-                    - generic [ref=e97]: Line Items Area
-                  - button "Add % Column" [ref=e99]:
-                    - img [ref=e100]
-                - generic [ref=e101] [cursor=pointer]:
-                  - generic [ref=e102]:
-                    - img [ref=e103]
-                    - generic [ref=e105]: "Subtotal: $0.00 Tax 1 (10%): $"
-                  - generic [ref=e106]:
-                    - combobox [ref=e108]:
+                      - img [ref=e86]
+                    - combobox [ref=e88]:
+                      - generic: 14pt
+                      - img [ref=e89]
+                  - button [ref=e91]:
+                    - img [ref=e92]
+              - generic [ref=e95] [cursor=pointer]:
+                - generic [ref=e96]:
+                  - img [ref=e97]
+                  - generic [ref=e98]: Line Items Area
+                - generic [ref=e99]:
+                  - generic [ref=e100]:
+                    - combobox [ref=e101]:
                       - generic: Arial
-                      - img [ref=e109]
-                    - button "Add Adjustment Layer" [ref=e111]:
-                      - img [ref=e112]
-                - generic [ref=e113]:
-                  - generic [ref=e115] [cursor=pointer]:
-                    - img [ref=e116]
-                    - textbox [ref=e120]: Subtotal
-                  - generic [ref=e121] [cursor=pointer]:
-                    - generic [ref=e122]:
-                      - img [ref=e123]
-                      - generic [ref=e126]:
-                        - generic [ref=e127]: Adjustment
-                        - textbox [ref=e128]: Adjustment
-                        - combobox [ref=e129]:
-                          - generic: Percentage
-                          - img [ref=e130]
-                        - combobox [ref=e132]:
-                          - generic: 10%
-                          - img [ref=e133]
-                    - button [ref=e136]:
-                      - img [ref=e137]
-                  - generic [ref=e141] [cursor=pointer]:
-                    - img [ref=e142]
-                    - textbox [ref=e146]: Grand Total
-          - generic [ref=e147]:
-            - button "Preview" [ref=e148]
-            - button "Save as Copy" [ref=e149]
-            - button "Save Changes" [ref=e150]
-        - generic [ref=e151]:
-          - generic [ref=e153]:
-            - generic [ref=e157]:
-              - img "template element"
-            - 'button "Invoice #: INV-2023-001" [disabled] [ref=e159]':
-              - generic [ref=e161]: "Invoice #: INV-2023-001"
-            - 'button "Date: January 1, 2023" [disabled] [ref=e171]':
-              - generic [ref=e173]: "Date: January 1, 2023"
-            - 'button "John Doe 123 Main St, City, State 12345 Phone: (555) 123-4567 Tax ID: 123-45-6789" [disabled] [ref=e183]':
-              - generic [ref=e185]: "John Doe 123 Main St, City, State 12345 Phone: (555) 123-4567 Tax ID: 123-45-6789"
-            - button "Subtotal $200.00 Adjustment $20.00 Add Adjustment Grand Total $220.00" [disabled] [ref=e195]:
-              - generic [ref=e198]:
-                - generic [ref=e199]:
-                  - generic [ref=e200]: Subtotal
-                  - generic [ref=e201]: $200.00
-                - generic [ref=e202]:
-                  - generic [ref=e203]:
-                    - textbox [disabled] [ref=e204]: Adjustment
-                    - combobox [disabled] [ref=e205]:
-                      - generic: 10%
-                      - img [ref=e206]
-                    - button [disabled] [ref=e208]:
-                      - img [ref=e209]
-                  - generic [ref=e212]: $20.00
-                - button "Add Adjustment" [disabled] [ref=e213]
-                - generic [ref=e214]:
-                  - generic [ref=e215]: Grand Total
-                  - generic [ref=e216]: $220.00
-            - table [ref=e228]:
-              - rowgroup [ref=e229]:
-                - row "Item Quantity Rate Amount" [ref=e230]:
-                  - columnheader "Item" [ref=e231]:
+                      - img [ref=e102]
+                    - combobox [ref=e104]:
+                      - generic: 10pt
+                      - img [ref=e105]
+                  - button "Add % Column" [ref=e107]:
+                    - img [ref=e108]
+              - generic [ref=e109] [cursor=pointer]:
+                - generic [ref=e110]:
+                  - img [ref=e111]
+                  - generic [ref=e113]: Totals Block
+                - generic [ref=e114]:
+                  - generic [ref=e115]:
+                    - combobox [ref=e116]:
+                      - generic: Arial
+                      - img [ref=e117]
+                    - combobox [ref=e119]:
+                      - generic: 14pt
+                      - img [ref=e120]
+                  - button "Add Adjustment Layer" [ref=e122]:
+                    - img [ref=e123]
+              - generic [ref=e124]:
+                - generic [ref=e126] [cursor=pointer]:
+                  - img [ref=e127]
+                  - generic [ref=e131]: Subtotal
+                - generic [ref=e132] [cursor=pointer]:
+                  - generic [ref=e133]:
+                    - img [ref=e134]
+                    - generic [ref=e137]:
+                      - generic [ref=e138]: Adjustment
+                      - textbox [ref=e139]: Adjustment
+                      - combobox [ref=e140]:
+                        - generic: Percentage
+                        - img [ref=e141]
+                      - combobox [ref=e143]:
+                        - generic: 10%
+                        - img [ref=e144]
+                  - button [ref=e147]:
+                    - img [ref=e148]
+                - generic [ref=e152] [cursor=pointer]:
+                  - img [ref=e153]
+                  - generic [ref=e157]: Grand Total
+        - generic [ref=e158]:
+          - generic [ref=e160]:
+            - button "INV-2023-001" [disabled] [ref=e162]:
+              - generic [ref=e165]: INV-2023-001
+            - button "January 1, 2023" [disabled] [ref=e167]:
+              - generic [ref=e170]: January 1, 2023
+            - 'button "John Doe 123 Main St, City, State 12345 Phone: (555) 123-4567 Tax ID: 123-45-6789" [disabled] [ref=e172]':
+              - generic [ref=e175]: "John Doe 123 Main St, City, State 12345 Phone: (555) 123-4567 Tax ID: 123-45-6789"
+            - button "Subtotal $200.00 Adjustment (10%) $20.00 Grand Total $220.00" [disabled] [ref=e177]:
+              - generic [ref=e180]:
+                - generic [ref=e181]:
+                  - generic [ref=e182]: Subtotal
+                  - generic [ref=e183]: $200.00
+                - generic [ref=e184]:
+                  - generic [ref=e185]: Adjustment (10%)
+                  - generic [ref=e186]: $20.00
+                - generic [ref=e187]:
+                  - generic [ref=e188]: Grand Total
+                  - generic [ref=e189]: $220.00
+            - table [ref=e201]:
+              - rowgroup [ref=e202]:
+                - row "Item Quantity Rate Amount" [ref=e203]:
+                  - columnheader "Item" [ref=e204]:
                     - text: Item
-                    - generic "Drag left or right to resize column" [ref=e232]:
-                      - generic [ref=e233]:
-                        - img [ref=e234]
-                        - img [ref=e236]
-                  - columnheader "Quantity" [ref=e238]:
+                    - generic "Drag left or right to resize column" [ref=e205]:
+                      - generic [ref=e206]:
+                        - img [ref=e207]
+                        - img [ref=e209]
+                  - columnheader "Quantity" [ref=e211]:
                     - text: Quantity
-                    - generic "Drag left or right to resize column" [ref=e239]:
-                      - generic [ref=e240]:
-                        - img [ref=e241]
-                        - img [ref=e243]
-                  - columnheader "Rate" [ref=e245]:
+                    - generic "Drag left or right to resize column" [ref=e212]:
+                      - generic [ref=e213]:
+                        - img [ref=e214]
+                        - img [ref=e216]
+                  - columnheader "Rate" [ref=e218]:
                     - text: Rate
-                    - generic "Drag left or right to resize column" [ref=e246]:
-                      - generic [ref=e247]:
-                        - img [ref=e248]
-                        - img [ref=e250]
-                  - columnheader "Amount" [ref=e252]
-              - rowgroup [ref=e253]:
-                - row "Sample Item 1 1 $100.00 $110.00" [ref=e254]:
-                  - cell "Sample Item 1" [ref=e255]
-                  - cell "1" [ref=e256]
-                  - cell "$100.00" [ref=e257]
-                  - cell "$110.00" [ref=e258]
-                - row "Sample Item 2 2 $50.00 $100.00" [ref=e259]:
-                  - cell "Sample Item 2" [ref=e260]
-                  - cell "2" [ref=e261]
-                  - cell "$50.00" [ref=e262]
-                  - cell "$100.00" [ref=e263]
-                - row "Additional line items will appear here" [ref=e264]:
-                  - cell "Additional line items will appear here" [ref=e265]
-          - status [ref=e274]
+                    - generic "Drag left or right to resize column" [ref=e219]:
+                      - generic [ref=e220]:
+                        - img [ref=e221]
+                        - img [ref=e223]
+                  - columnheader "Amount" [ref=e225]
+              - rowgroup [ref=e226]:
+                - row "Sample Item 1 1 $100.00 $110.00" [ref=e227]:
+                  - cell "Sample Item 1" [ref=e228]
+                  - cell "1" [ref=e229]
+                  - cell "$100.00" [ref=e230]
+                  - cell "$110.00" [ref=e231]
+                - row "Sample Item 2 2 $50.00 $100.00" [ref=e232]:
+                  - cell "Sample Item 2" [ref=e233]
+                  - cell "2" [ref=e234]
+                  - cell "$50.00" [ref=e235]
+                  - cell "$100.00" [ref=e236]
+                - row "Additional line items will appear here" [ref=e237]:
+                  - cell "Additional line items will appear here" [ref=e238]
+          - status [ref=e247]
 ```

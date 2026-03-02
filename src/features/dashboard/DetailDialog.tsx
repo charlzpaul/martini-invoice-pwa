@@ -88,7 +88,7 @@ export function DetailDialog({ open, onOpenChange, type, data }: DetailDialogPro
                     <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                     <div>
                       <span className="font-medium">Address:</span>
-                      <p className="text-muted-foreground">{(data as Customer).address}</p>
+                      <p className="text-muted-foreground whitespace-pre-wrap">{(data as Customer).address}</p>
                     </div>
                   </div>
 

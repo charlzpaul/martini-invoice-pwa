@@ -10,12 +10,12 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="py-4 px-8 border-b">
-        <div className="flex justify-end">
+      <header className="py-4 px-4 sm:px-8 border-b">
+        <div className="flex justify-end max-w-7xl mx-auto">
           <GoogleAuth />
         </div>
       </header>
-      <main className="container mx-auto p-4 sm:p-6 lg:p-8">
+      <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {children}
       </main>
       <Toaster />

@@ -2,6 +2,7 @@ import { StrictMode, Suspense, Component } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ThemeProvider } from 'next-themes';
 import './index.css';
 import App from './App.tsx';
 
@@ -61,13 +62,15 @@ function LoadingFallback() {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Suspense fallback={<LoadingFallback />}>
-      <GoogleOAuthProvider clientId="placeholder-client-id">
-        <BrowserRouter>
-          <ErrorBoundary>
-            <App />
-          </ErrorBoundary>
-        </BrowserRouter>
-      </GoogleOAuthProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+          <BrowserRouter>
+            <ErrorBoundary>
+              <App />
+            </ErrorBoundary>
+          </BrowserRouter>
+        </GoogleOAuthProvider>
+      </ThemeProvider>
     </Suspense>
   </StrictMode>
 );

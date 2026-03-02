@@ -1,19 +1,19 @@
-# QA Test Plan: Martini Shot Invoices PWA
+# QA Test Plan: Martini Records PWA
 
 ## 1. Test Strategy
 
 ### Objectives
-* Verify that all features of the Martini Shot Invoices PWA function according to design specifications.
+* Verify that all features of the Martini Records PWA function according to design specifications.
 * Ensure a seamless and intuitive user experience across different devices and browsers.
 * Identify and document any defects, usability issues, or performance bottlenecks.
 * Validate the security of sensitive data and user interactions.
 * Confirm reliable integration with Google Drive for data synchronization.
 
 ### Scope
-The testing will cover all major features of the Martini Shot Invoices PWA, including:
+The testing will cover all major features of the Martini Records PWA, including:
 *   Dashboard
 *   Template Builder
-*   Invoice Builder
+*   Record Builder
 *   PDF Generation
 *   Google Drive Sync
 *   Customer/Product Management
@@ -67,8 +67,8 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 ### 4.1. Dashboard
 
 #### Test Case ID: DASH-001
-**Description**: Verify that the Dashboard loads correctly and displays an overview of recent invoices and quick actions.
-**Preconditions**: User is logged in and has existing invoice data.
+**Description**: Verify that the Dashboard loads correctly and displays an overview of recent records and quick actions.
+**Preconditions**: User is logged in and has existing record data.
 **Test Steps**:
 1. Navigate to the Dashboard page.
 **Expected Results**: The Dashboard page loads without errors, displaying a summary of recent activities and available quick actions.
@@ -78,7 +78,7 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 **Description**: Verify quick actions functionality.
 **Preconditions**: User is logged in.
 **Test Steps**:
-1. Click on 'Create New Invoice'.
+1. Click on 'Create New Record'.
 2. Click on 'Manage Templates'.
 3. Click on 'Sync with Google Drive'.
 **Expected Results**: Each quick action navigates to the respective feature page or initiates the correct process.
@@ -136,28 +136,28 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 **Expected Results**: The selected template loads, changes can be made, and the updated template is saved.
 **Priority**: High
 
-### 4.3. Invoice Builder
+### 4.3. Record Builder
 
-#### Test Case ID: INV-001
-**Description**: Verify that the Invoice Builder loads correctly.
+#### Test Case ID: REC-001
+**Description**: Verify that the Record Builder loads correctly.
 **Preconditions**: User is logged in.
 **Test Steps**:
-1. Navigate to the Invoice Builder page.
-**Expected Results**: The Invoice Builder interface loads with fields for invoice details, customer, line items, and template selection.
+1. Navigate to the Record Builder page.
+**Expected Results**: The Record Builder interface loads with fields for record details, customer, line items, and template selection.
 **Priority**: High
 
-#### Test Case ID: INV-002
-**Description**: Verify filling out invoice header details.
-**Preconditions**: Invoice Builder is open.
+#### Test Case ID: REC-002
+**Description**: Verify filling out record header details.
+**Preconditions**: Record Builder is open.
 **Test Steps**:
-1. Fill in Invoice Number, Date, Due Date.
+1. Fill in Record Number, Date, Due Date.
 2. Select a customer from the dropdown.
 **Expected Results**: All header fields accept input, and selected customer information populates correctly.
 **Priority**: High
 
-#### Test Case ID: INV-003
+#### Test Case ID: REC-003
 **Description**: Verify adding and removing line items.
-**Preconditions**: Invoice Builder is open.
+**Preconditions**: Record Builder is open.
 **Test Steps**:
 1. Add a new line item (description, quantity, price).
 2. Add another line item.
@@ -165,34 +165,34 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 **Expected Results**: Line items can be added and removed, and calculations (subtotal, total) update correctly.
 **Priority**: High
 
-#### Test Case ID: INV-004
+#### Test Case ID: REC-004
 **Description**: Verify selecting and applying a template.
-**Preconditions**: Invoice Builder is open, and templates are available.
+**Preconditions**: Record Builder is open, and templates are available.
 **Test Steps**:
 1. Select a saved template from the template dropdown.
 2. Verify the preview reflects the chosen template.
-**Expected Results**: The selected template is applied to the invoice, and the visual preview updates accordingly.
+**Expected Results**: The selected template is applied to the record, and the visual preview updates accordingly.
 **Priority**: High
 
-#### Test Case ID: INV-005
-**Description**: Verify saving an invoice.
-**Preconditions**: Invoice Builder is open with a partially or fully filled invoice.
+#### Test Case ID: REC-005
+**Description**: Verify saving a record.
+**Preconditions**: Record Builder is open with a partially or fully filled record.
 **Test Steps**:
-1. Fill in required invoice details.
-2. Click 'Save Invoice'.
-**Expected Results**: The invoice is saved successfully and is accessible from the Dashboard or a list of invoices.
+1. Fill in required record details.
+2. Click 'Save Record'.
+**Expected Results**: The record is saved successfully and is accessible from the Dashboard or a list of records.
 **Priority**: High
 
 ### 4.4. PDF Generation
 
 #### Test Case ID: PDF-001
-**Description**: Verify PDF generation for a new invoice.
-**Preconditions**: An invoice is created or opened in the Invoice Builder.
+**Description**: Verify PDF generation for a new record.
+**Preconditions**: A record is created or opened in the Record Builder.
 **Test Steps**:
-1. Create a new invoice with some details and line items.
+1. Create a new record with some details and line items.
 2. Click 'Generate PDF'.
 3. Review the PDF preview.
-**Expected Results**: A PDF preview is displayed correctly, accurately reflecting the invoice content and selected template.
+**Expected Results**: A PDF preview is displayed correctly, accurately reflecting the record content and selected template.
 **Priority**: High
 
 #### Test Case ID: PDF-002
@@ -201,15 +201,15 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 **Test Steps**:
 1. From the PDF preview, click the 'Download' button.
 2. Open the downloaded PDF file.
-**Expected Results**: The PDF file downloads successfully and opens without corruption, displaying the correct invoice content.
+**Expected Results**: The PDF file downloads successfully and opens without corruption, displaying the correct record content.
 **Priority**: High
 
 #### Test Case ID: PDF-003
 **Description**: Verify PDF content accuracy (e.g., customer details, line items, totals).
 **Preconditions**: A PDF is generated and open.
 **Test Steps**:
-1. Compare the PDF content with the invoice data in the PWA.
-**Expected Results**: All invoice details (invoice number, dates, customer info, line items, quantities, prices, subtotals, taxes, total) are accurately reflected in the PDF.
+1. Compare the PDF content with the record data in the PWA.
+**Expected Results**: All record details (record number, dates, customer info, line items, quantities, prices, subtotals, taxes, total) are accurately reflected in the PDF.
 **Priority**: High
 
 ### 4.5. Google Drive Sync
@@ -225,11 +225,11 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 
 #### Test Case ID: GDS-002
 **Description**: Verify initial data synchronization to Google Drive.
-**Preconditions**: User is authenticated with Google Drive and has local invoice/template data.
+**Preconditions**: User is authenticated with Google Drive and has local record/template data.
 **Test Steps**:
 1. Initiate a sync operation (e.g., from Dashboard Quick Actions).
 2. Check the user's Google Drive for the synced data (e.g., a specific application folder).
-**Expected Results**: Local data (invoices, templates, customer/product lists) is successfully uploaded and organized in Google Drive.
+**Expected Results**: Local data (records, templates, customer/product lists) is successfully uploaded and organized in Google Drive.
 **Priority**: High
 
 #### Test Case ID: GDS-003
@@ -246,8 +246,8 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 **Description**: Verify conflict resolution during synchronization (if applicable).
 **Preconditions**: User has modified data both locally and in Google Drive (simulated or actual).
 **Test Steps**:
-1. Make a change to an invoice locally.
-2. (Simulate) Make a conflicting change to the same invoice directly in Google Drive.
+1. Make a change to a record locally.
+2. (Simulate) Make a conflicting change to the same record directly in Google Drive.
 3. Initiate sync.
 **Expected Results**: The system handles conflicts gracefully, either by prompting the user, applying a last-modified rule, or creating duplicates for review.
 **Priority**: Medium
@@ -271,7 +271,7 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 2. Click 'Add New Customer'.
 3. Fill in customer details (name, address, email, phone).
 4. Save the customer.
-**Expected Results**: The new customer is added to the customer list and can be selected in the Invoice Builder.
+**Expected Results**: The new customer is added to the customer list and can be selected in the Record Builder.
 **Priority**: High
 
 #### Test Case ID: CPM-002
@@ -281,7 +281,7 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 1. Select an existing customer from the list.
 2. Modify some details (e.g., update address).
 3. Save changes.
-**Expected Results**: The customer's details are updated successfully in the list and any associated invoices.
+**Expected Results**: The customer's details are updated successfully in the list and any associated records.
 **Priority**: High
 
 #### Test Case ID: CPM-003
@@ -302,7 +302,7 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 2. Click 'Add New Product/Service'.
 3. Fill in details (name, description, unit price).
 4. Save.
-**Expected Results**: The new product/service is added to the list and can be selected in the Invoice Builder line items.
+**Expected Results**: The new product/service is added to the list and can be selected in the Record Builder line items.
 **Priority**: High
 
 #### Test Case ID: CPM-005
@@ -331,8 +331,8 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 *   **Valid User Credentials**: For login and Google Drive authentication.
 *   **Sample Customers**: At least 5 distinct customer profiles with varied details (name, address, email, phone).
 *   **Sample Products/Services**: At least 10 distinct products/services with different descriptions and unit prices.
-*   **Existing Templates**: A mix of simple and complex invoice templates.
-*   **Existing Invoices**: A dataset of 10-20 invoices covering different customers, products, and statuses.
+*   **Existing Templates**: A mix of simple and complex record templates.
+*   **Existing Records**: A dataset of 10-20 records covering different customers, products, and statuses.
 
 ### Edge Cases
 *   **Empty Fields**: Test creation/saving with mandatory fields left blank.
@@ -350,7 +350,7 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 ### Automated Testing
 *   **Unit Tests**: For individual functions and components.
 *   **Integration Tests**: For API endpoints and interactions between modules.
-*   **End-to-End (E2E) Tests**: Using tools like Playwright or Cypress for critical user flows (e.g., create invoice, generate PDF, sync).
+*   **End-to-End (E2E) Tests**: Using tools like Playwright or Cypress for critical user flows (e.g., create record, generate PDF, sync).
 
 ### Priority Levels
 *   **High (P1)**: Critical functionalities, core user flows, major bugs, security vulnerabilities. Blocks release.
@@ -401,5 +401,3 @@ Identifying vulnerabilities and ensuring data protection, secure authentication,
 *   **Screen Resolution**: Test on typical Samsung Galaxy S22 Ultra resolutions.
 *   **Android Browser Compatibility**: Ensure full functionality and UI consistency on Chrome Android.
 *   **Back Button Functionality**: Verify the hardware/software back button behaves as expected within the PWA.
-
-

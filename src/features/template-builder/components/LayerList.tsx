@@ -111,7 +111,9 @@ export function LayerList() {
     const newTotalsBlockGroupedLayer = {
       id: 'percentage-column-totals-layer',
       name: percentageColumnHeader,
+      type: 'percentage' as const,
       percentage: percentageColumnValue,
+      value: 0,
       isVisible: true,
       isUndeletable: true, // This layer cannot be deleted as it depends on the percentage column
     };
@@ -303,6 +305,38 @@ export function LayerList() {
       return;
     }
     
+    // Handle deletion of percentage column totals layer
+    if (layerId === 'percentage-column-totals-layer') {
+      // Disable percentage column when its totals layer is deleted
+      const currentColumnWidths = activeTemplate.lineItemArea.columnWidths || [200, 80, 80, 80, 100];
+      // Remove percentage column width (index 3)
+      const newColumnWidths = [
+        ...currentColumnWidths.slice(0, 3), // Item, Quantity, Rate
+        ...currentColumnWidths.slice(4) // Amount column (skip percentage)
+      ];
+      
+      // Remove the corresponding totals block grouped layer
+      const currentTotalsBlockGroupedLayers = activeTemplate.totalsBlockGroupedLayers || [];
+      const updatedTotalsBlockGroupedLayers = currentTotalsBlockGroupedLayers.filter(
+        layer => layer.id !== 'percentage-column-totals-layer'
+      );
+      
+      updateActiveTemplate({
+        hasPercentageColumn: false,
+        lineItemArea: {
+          ...activeTemplate.lineItemArea,
+          columnWidths: newColumnWidths
+        },
+        totalsBlockGroupedLayers: updatedTotalsBlockGroupedLayers
+      });
+      
+      // If the deleted layer was selected, clear selection
+      if (selectedItemId === layerId) {
+        setSelectedItemId(null);
+      }
+      return;
+    }
+    
     // Handle deletion of totals block grouped layers
     const totalsBlockGroupedLayer = activeTemplate.totalsBlockGroupedLayers?.find(layer => layer.id === layerId);
     if (totalsBlockGroupedLayer) {
@@ -374,7 +408,7 @@ export function LayerList() {
         return 'Date Block';
       }
       if (layer.id === 'invoice-number' || layer.id?.includes('invoice-number')) {
-        return 'Invoice Number Block';
+        return 'Record Number Block';
       }
       if (layer.id === 'totals-block' || layer.id?.includes('totals-block')) {
         return 'Totals Block';
@@ -634,54 +668,60 @@ export function LayerList() {
                       <Receipt className="h-4 w-4 flex-shrink-0" />
                       <div className="flex items-center gap-1 flex-1" onClick={(e) => e.stopPropagation()}>
                         {groupedLayer.id === 'percentage-column-totals-layer' ? (
-                          <span className="text-xs text-muted-foreground whitespace-nowrap">Percentage Column</span>
-                        ) : !groupedLayer.isUndeletable ? (
-                          <span className="text-xs text-muted-foreground whitespace-nowrap">Adjustment</span>
-                        ) : null}
-                        <Input
-                          value={groupedLayer.name}
-                          onChange={(e) => handleUpdateGroupedLayerName(groupedLayer.id, e.target.value)}
-                          className="h-6 text-xs w-20"
-                          size={1}
-                        />
-                        {/* Don't show type dropdown and value/percentage inputs for Subtotal and Grand Total layers */}
-                        {groupedLayer.id !== 'subtotal-layer' && groupedLayer.id !== 'grand-total-layer' && (
+                          <span className="text-xs whitespace-nowrap">Percentage Column</span>
+                        ) : groupedLayer.id === 'subtotal-layer' || groupedLayer.id === 'grand-total-layer' ? (
+                          <span className="text-xs whitespace-nowrap">{groupedLayer.name}</span>
+                        ) : (
                           <>
-                            <Select
-                              value={groupedLayer.type}
-                              onValueChange={(value: 'percentage' | 'value') => handleUpdateGroupedLayerType(groupedLayer.id, value)}
-                            >
-                              <SelectTrigger className="h-6 w-20 text-xs">
-                                <SelectValue placeholder="Type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="percentage">Percentage</SelectItem>
-                                <SelectItem value="value">Value</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            {groupedLayer.type === 'percentage' ? (
-                              <Select
-                                value={groupedLayer.percentage.toString()}
-                                onValueChange={(value) => handleUpdateGroupedLayerPercentage(groupedLayer.id, parseInt(value))}
-                              >
-                                <SelectTrigger className="h-6 w-16 text-xs">
-                                  <SelectValue placeholder="%" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {Array.from({ length: 100 }, (_, i) => i).map(num => (
-                                    <SelectItem key={num} value={num.toString()}>{num}%</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            ) : (
-                              <Input
-                                type="number"
-                                value={groupedLayer.value}
-                                onChange={(e) => handleUpdateGroupedLayerValue(groupedLayer.id, parseFloat(e.target.value) || 0)}
-                                className="h-6 text-xs w-20"
-                                placeholder="Value"
-                                step="0.01"
-                              />
+                            {!groupedLayer.isUndeletable && (
+                              <span className="text-xs text-muted-foreground whitespace-nowrap">Adjustment</span>
+                            )}
+                            <Input
+                              value={groupedLayer.name}
+                              onChange={(e) => handleUpdateGroupedLayerName(groupedLayer.id, e.target.value)}
+                              className="h-6 text-xs w-20"
+                              size={1}
+                            />
+                            {/* Don't show type dropdown and value/percentage inputs for Subtotal and Grand Total layers */}
+                            {groupedLayer.id !== 'subtotal-layer' && groupedLayer.id !== 'grand-total-layer' && (
+                              <>
+                                <Select
+                                  value={groupedLayer.type}
+                                  onValueChange={(value: 'percentage' | 'value') => handleUpdateGroupedLayerType(groupedLayer.id, value)}
+                                >
+                                  <SelectTrigger className="h-6 w-20 text-xs">
+                                    <SelectValue placeholder="Type" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="percentage">Percentage</SelectItem>
+                                    <SelectItem value="value">Value</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                {groupedLayer.type === 'percentage' ? (
+                                  <Select
+                                    value={groupedLayer.percentage.toString()}
+                                    onValueChange={(value) => handleUpdateGroupedLayerPercentage(groupedLayer.id, parseInt(value))}
+                                  >
+                                    <SelectTrigger className="h-6 w-16 text-xs">
+                                      <SelectValue placeholder="%" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {Array.from({ length: 100 }, (_, i) => i).map(num => (
+                                        <SelectItem key={num} value={num.toString()}>{num}%</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                ) : (
+                                  <Input
+                                    type="number"
+                                    value={groupedLayer.value}
+                                    onChange={(e) => handleUpdateGroupedLayerValue(groupedLayer.id, parseFloat(e.target.value) || 0)}
+                                    className="h-6 text-xs w-20"
+                                    placeholder="Value"
+                                    step="0.01"
+                                  />
+                                )}
+                              </>
                             )}
                           </>
                         )}
@@ -689,7 +729,7 @@ export function LayerList() {
                     </div>
                     
                     <div className="flex items-center space-x-1 flex-shrink-0">
-                      {!groupedLayer.isUndeletable && (
+                      {!groupedLayer.isUndeletable && groupedLayer.id !== 'percentage-column-totals-layer' && (
                         <Button
                           variant="ghost"
                           size="icon"

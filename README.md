@@ -1,6 +1,6 @@
-# Martini Shot Invoices
+# Martini Records
 
-An offline-first, industry-leading Progressive Web App (PWA) for generating custom invoices using React, TypeScript, Tailwind CSS, Zustand, and IndexedDB. The app features a template builder, customer/product management, dynamic invoice generation, PDF export, and Google Drive synchronization.
+An offline-first, industry-leading Progressive Web App (PWA) for generating custom records using React, TypeScript, Tailwind CSS, Zustand, and IndexedDB. The app features a template builder, customer/product management, dynamic record generation, PDF export, and Google Drive synchronization.
 
 Currently, two official plugins are available:
 
@@ -70,4 +70,3 @@ export default defineConfig([
     },
   },
 ])
-```

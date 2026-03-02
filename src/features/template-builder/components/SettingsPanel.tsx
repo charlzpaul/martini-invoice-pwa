@@ -326,8 +326,13 @@ export function SettingsPanel() {
         x = Math.max(0, Math.min(x, canvasWidth - width));
         y = Math.max(0, Math.min(y, canvasHeight - height));
         
-        // Resize and compress the image to the actual display size
-        resizeAndCompressImage(img, width, height, (compressedBase64) => {
+        // Increase resolution for high-quality printing (3x multiplier = ~288 DPI)
+        const PRINT_QUALITY_MULTIPLIER = 3;
+        const storageWidth = width * PRINT_QUALITY_MULTIPLIER;
+        const storageHeight = height * PRINT_QUALITY_MULTIPLIER;
+        
+        // Resize and compress the image to the actual storage size (higher than display size for print quality)
+        resizeAndCompressImage(img, storageWidth, storageHeight, (compressedBase64) => {
           const newImage = {
             id: `image-${Date.now()}`,
             base64Data: compressedBase64,
@@ -437,7 +442,7 @@ export function SettingsPanel() {
         
         <div className="space-y-2">
           <Button variant="outline" onClick={handleAddImageClick} className="w-full">
-            Add Image
+            Add Background Layer
           </Button>
           <input
             type="file"
@@ -453,7 +458,7 @@ export function SettingsPanel() {
               onClick={() => setShowBlockOptions(!showBlockOptions)}
               className="w-full flex items-center justify-center relative"
             >
-              <span>Add Default Block</span>
+              <span>Add Default Layer</span>
               <ChevronDown className={`h-4 w-4 absolute right-3 transition-transform ${showBlockOptions ? 'rotate-180' : ''}`} />
             </Button>
             
@@ -465,21 +470,21 @@ export function SettingsPanel() {
                     className="w-full flex items-center space-x-2 p-2 text-sm hover:bg-accent rounded-md text-left"
                   >
                     <User className="h-4 w-4" />
-                    <span>Customer Info Block</span>
+                    <span>Customer Info</span>
                   </button>
                   <button
                     onClick={() => handleAddDefaultBlock('date-block')}
                     className="w-full flex items-center space-x-2 p-2 text-sm hover:bg-accent rounded-md text-left"
                   >
                     <Calendar className="h-4 w-4" />
-                    <span>Date Block</span>
+                    <span>Date</span>
                   </button>
                   <button
                     onClick={() => handleAddDefaultBlock('invoice-number')}
                     className="w-full flex items-center space-x-2 p-2 text-sm hover:bg-accent rounded-md text-left"
                   >
                     <FileText className="h-4 w-4" />
-                    <span>Invoice Number Block</span>
+                    <span>Record Number</span>
                   </button>
                 </div>
               </div>

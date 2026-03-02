@@ -5,6 +5,8 @@ import { QuickActions } from './QuickActions';
 import { FeedList } from './FeedList';
 import { AppLayout } from '@/app/AppLayout';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { seedLargeData } from '@/db/seed-large';
+import { Button } from '@/components/ui/button';
 
 export function DashboardPage() {
   const fetchDashboardData = useStore((state) => state.fetchDashboardData);
@@ -18,12 +20,19 @@ export function DashboardPage() {
   const [filter, setFilter] = useState<string>('all'); // 'all', 'Invoice', 'Template', 'PDF', 'Customer', 'Product'
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(true);
   }, [fetchDashboardData]);
 
   const filteredFeed = filter === 'all'
     ? feed
     : feed.filter(item => item.itemType === filter);
+
+  const items = filteredFeed;
+
+  const handleSeedLarge = async () => {
+    await seedLargeData();
+    fetchDashboardData(true);
+  };
 
   return (
     <AppLayout>
@@ -77,7 +86,7 @@ export function DashboardPage() {
                   onChange={(e) => setFilter(e.target.value)}
                   className="mr-2"
                 />
-                <span className="text-sm">Invoices</span>
+                <span className="text-sm">Records</span>
               </label>
               <label className="inline-flex items-center">
                 <input
@@ -89,17 +98,6 @@ export function DashboardPage() {
                   className="mr-2"
                 />
                 <span className="text-sm">Templates</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="feed-filter"
-                  value="PDF"
-                  checked={filter === 'PDF'}
-                  onChange={(e) => setFilter(e.target.value)}
-                  className="mr-2"
-                />
-                <span className="text-sm">PDFs</span>
               </label>
               <label className="inline-flex items-center">
                 <input
@@ -126,9 +124,9 @@ export function DashboardPage() {
             </div>
           </div>
           
-          {loading && <p>Loading feed...</p>}
+          {loading && items.length === 0 && <p>Loading feed...</p>}
           {error && <p className="text-destructive">{error}</p>}
-          {!loading && !error && <FeedList items={filteredFeed} />}
+          {(items.length > 0 || !loading) && !error && <FeedList items={filteredFeed} />}
         </div>
       </div>
     </AppLayout>

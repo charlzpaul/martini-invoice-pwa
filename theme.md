@@ -49,31 +49,25 @@ All theme colors are defined as CSS custom properties in [`src/index.css`](src/i
 
 ```css
 .dark {
-  --martini-primary: 158 48% 46%;
-  --martini-secondary: 38 92% 50%;
-  --martini-dark: 28 16% 21%;
-  --martini-light: 0 0% 15%;
-  --martini-accent: 174 83% 41%;
-
-  --background: var(--martini-dark);
-  --foreground: var(--martini-light);
-  --card: var(--martini-dark);
-  --card-foreground: var(--martini-light);
-  --popover: var(--martini-dark);
-  --popover-foreground: var(--martini-light);
-  --primary: var(--martini-primary);
-  --primary-foreground: 0 0% 100%;
-  --secondary: var(--martini-secondary);
-  --secondary-foreground: 0 0% 100%;
-  --muted: 240 3.7% 20%;
-  --muted-foreground: 240 5% 65%;
-  --accent: var(--martini-accent);
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 62.8% 30.6%;
+  --background: 220 28% 9%;       /* Midnight Gin - Deep cool charcoal */
+  --foreground: 210 20% 96%;       /* Gin Frost - Icy white */
+  --card: 220 28% 12%;             /* Chilled Glass surface */
+  --card-foreground: 210 20% 96%;
+  --popover: 220 28% 12%;
+  --popover-foreground: 210 20% 96%;
+  --primary: 84 18% 45%;           /* Sophisticated Olive Garnish */
+  --primary-foreground: 210 20% 10%;
+  --secondary: 42 10% 65%;         /* Dry Vermouth Straw */
+  --secondary-foreground: 210 20% 10%;
+  --muted: 220 15% 20%;
+  --muted-foreground: 215 15% 70%;
+  --accent: 0 72% 51%;             /* Pimento Red Accent */
+  --accent-foreground: 210 20% 98%;
+  --destructive: 0 62.8% 35.6%;
   --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 25%;
-  --input: 240 3.7% 25%;
-  --ring: var(--martini-primary);
+  --border: 220 15% 22%;
+  --input: 220 15% 22%;
+  --ring: 84 18% 45%;
 }
 ```
 
@@ -81,11 +75,11 @@ All theme colors are defined as CSS custom properties in [`src/index.css`](src/i
 
 | Variable | HSL Value | Description |
 |----------|-----------|-------------|
-| `--martini-primary` | `90 26% 49%` | **Olive Green** - Main brand color for primary buttons, links, and highlights = rgb(125, 157, 93) |
-| `--martini-secondary` | `38 92% 50%` | **Gold/Amber** - Secondary color for accents, highlights, and success states = rgb(237, 137, 23) |
-| `--martini-dark` | `24 37% 20%` | **Deep Charcoal** - Dark text and background in dark mode = rgb(71, 48, 33) |
-| `--martini-light` | `0 0% 99%` | **Cream/Off-white** - Background in light mode, dark in dark mode = rgb(252, 252, 252) |
-| `--martini-accent` | `174 83% 41%` | **Teal** - Accent color for special highlights and interactive elements |
+| `--primary` | `84 18% 45%` (Dark) | **Olive Garnish** - Sophisticated green representing the iconic martini olive. |
+| `--secondary` | `42 10% 65%` (Dark) | **Dry Vermouth** - Pale straw color representing the aromatic fortified wine. |
+| `--background` | `220 28% 9%` (Dark) | **Midnight Gin** - Deep, cool charcoal representing the atmosphere of a classic bar. |
+| `--foreground` | `210 20% 96%` (Dark) | **Gin Frost** - Icy white representing the chilled spirit and frosted glass. |
+| `--accent` | `0 72% 51%` | **Pimento** - Bright red pop representing the olive's pimento stuffing. |
 
 ## Using the Theme
 
@@ -202,10 +196,10 @@ To add custom colors or extend the theme:
 ### Accent Color (Teal)
 `hsl(174, 83%, 41%)` - #5BC3B4
 
-### Dark Mode Background
-`hsl(28, 16%, 21%)` - #473018 = rgb(71, 48, 33)
+### Dark Mode Background (Midnight Gin)
+`hsl(220, 28%, 9%)` - Deep, cool charcoal.
 
-### Light Mode Background
+### Light Mode Background (Cream/Off-white)
 `hsl(0, 0%, 98%)` - #FCFCFC = rgb(252, 252, 252)
 
 ## Accessibility

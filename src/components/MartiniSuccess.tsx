@@ -50,7 +50,7 @@ export function MartiniSuccess() {
             cy="60"
             r="50"
             fill="none"
-            stroke="rgb(125, 157, 93)"
+            stroke="hsl(var(--primary))"
             strokeWidth="4"
             className="shimmer"
           />
@@ -68,7 +68,7 @@ export function MartiniSuccess() {
           <path
             d="M40 60 L55 75 L80 45"
             fill="none"
-            stroke="rgb(125, 157, 93)"
+            stroke="hsl(var(--primary))"
             strokeWidth="6"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -78,8 +78,8 @@ export function MartiniSuccess() {
           {/* Gradient Definition */}
           <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgb(125, 157, 93)" />
-              <stop offset="100%" stopColor="rgb(237, 137, 23)" />
+              <stop offset="0%" stopColor="hsl(var(--primary))" />
+              <stop offset="100%" stopColor="hsl(var(--secondary))" />
             </linearGradient>
           </defs>
         </svg>
@@ -94,66 +94,71 @@ export function MartiniSuccess() {
           {/* Glass Stem */}
           <line
             x1="40"
-            y1="80"
+            y1="81"
             x2="40"
             y2="110"
-            stroke="rgb(71, 48, 33)"
+            stroke="currentColor"
             strokeWidth="3"
             strokeLinecap="round"
+            className="text-foreground/60"
           />
           {/* Glass Base */}
           <ellipse
             cx="40"
             cy="110"
-            rx="20"
-            ry="5"
-            fill="rgb(71, 48, 33)"
+            rx="30"
+            ry="6"
+            fill="currentColor"
+            className="text-foreground/60"
           />
           {/* Glass Body */}
           <path
-            d="M20 10 Q20 80 40 80 Q60 80 60 10 Z"
+            d="M5 20 L75 20 L40 80.6 Z"
             fill="none"
-            stroke="rgb(71, 48, 33)"
+            stroke="currentColor"
             strokeWidth="4"
             strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-foreground/60"
           />
           {/* Liquid */}
           <path
-            d="M23 20 Q23 70 40 70 Q57 70 57 20 Z"
-            fill="rgb(125, 157, 93)"
-            opacity="0.6"
+            d="M14 35 L66 35 L40 80.6 Z"
+            fill="hsl(var(--primary))"
+            opacity="0.7"
           />
           {/* Olive with Twist */}
           <g className="sparkle">
             <circle
-              cx="40"
-              cy="25"
+              cx="48"
+              cy="55"
               r="6"
-              fill="rgb(125, 157, 93)"
-              stroke="rgb(91, 125, 65)"
+              fill="hsl(var(--primary))"
+              stroke="hsl(var(--primary)/0.8)"
               strokeWidth="1.5"
             />
             <circle
-              cx="40"
-              cy="25"
+              cx="48"
+              cy="55"
               r="2.5"
-              fill="rgb(65, 95, 45)"
+              fill="hsl(var(--accent))"
+              opacity="0.8"
             />
             {/* Olive Twist */}
             <path
-              d="M40 19 Q44 21 44 25"
+              d="M48 49 Q52 51 52 55"
               fill="none"
-              stroke="rgb(237, 137, 23)"
+              stroke="hsl(var(--secondary))"
               strokeWidth="1"
               strokeLinecap="round"
             />
           </g>
           {/* Glass Reflection */}
           <path
-            d="M23 15 Q27 60 40 60 Q53 60 57 15"
+            d="M12 28 L24 28"
             fill="none"
             stroke="white"
-            strokeWidth="1.5"
+            strokeWidth="2"
             opacity="0.4"
             strokeLinecap="round"
           />
@@ -162,7 +167,7 @@ export function MartiniSuccess() {
 
       {/* Success Message */}
       <h2 className="text-3xl font-bold text-foreground mb-2">
-        Martini Shot Invoices
+        Martini Records
       </h2>
       <p className="text-lg text-muted-foreground">
         All changes saved successfully!

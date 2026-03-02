@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 export function TemplateBuilderPage() {
   const { id } = useParams<{ id:string }>();
   const navigate = useNavigate();
-  const hasInitialized = useRef(false);
+  const lastLoadedIdRef = useRef<string | null>(null);
   
   // Select state and actions from the store
   const {
@@ -59,19 +59,16 @@ export function TemplateBuilderPage() {
   };
 
   useEffect(() => {
-    // Prevent running multiple times in Strict Mode
-    if (hasInitialized.current) return;
+    // Skip if id is undefined or same as last loaded
+    if (!id || id === lastLoadedIdRef.current) return;
     
-    if (id) {
-      if (id === 'new') {
-        // Only create if we don't already have an active template
-        if (!activeTemplate || activeTemplate.id === 'new') {
-          createNewTemplate();
-        }
-      } else {
-        loadTemplate(id);
-      }
-      hasInitialized.current = true;
+    if (id === 'new') {
+      // Always create a brand new template when navigating to /template/new
+      createNewTemplate();
+      lastLoadedIdRef.current = id;
+    } else {
+      loadTemplate(id);
+      lastLoadedIdRef.current = id;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]); // Note: We remove store functions from deps to avoid re-triggering on every render
@@ -99,6 +96,15 @@ export function TemplateBuilderPage() {
             <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
+                onClick={handleGoHome}
+                className="flex items-center gap-2"
+              >
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">Home</span>
+                <span className="sm:hidden">Home</span>
+              </Button>
+              <Button
+                variant="outline"
                 onClick={handlePreview}
                 className="flex items-center gap-2"
               >
@@ -116,15 +122,6 @@ export function TemplateBuilderPage() {
                 className="flex items-center gap-2"
               >
                 Save Changes
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleGoHome}
-                className="flex items-center gap-2"
-              >
-                <Home className="h-4 w-4" />
-                <span className="hidden sm:inline">Home</span>
-                <span className="sm:hidden">Home</span>
               </Button>
             </div>
           </header>

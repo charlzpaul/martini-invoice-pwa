@@ -72,6 +72,7 @@ export interface Template {
   totalsBlockGroupedLayers?: TotalsBlockGroupedLayer[]; // Grouped layers within the totals block
   createdAt: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
+  lastSyncedAt?: string; // ISO 8601 date string
 }
 
 /**
@@ -86,6 +87,7 @@ export interface Customer {
   taxId?: string; // Optional as not all customers may have one
   createdAt: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
+  lastSyncedAt?: string; // ISO 8601 date string
 }
 
 /**
@@ -99,6 +101,7 @@ export interface Product {
   unit: 'hour' | 'item' | 'service';
   createdAt: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
+  lastSyncedAt?: string; // ISO 8601 date string
 }
 
 /**
@@ -134,6 +137,7 @@ export interface Invoice {
   grandTotal: number;
   createdAt: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
+  lastSyncedAt?: string; // ISO 8601 date string
 }
 
 /**
@@ -146,4 +150,5 @@ export interface GeneratedPDF {
   generatedAt: string; // ISO 8601 date string
   createdAt: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
+  lastSyncedAt?: string; // ISO 8601 date string
 }

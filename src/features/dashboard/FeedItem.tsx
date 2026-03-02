@@ -8,9 +8,11 @@ import { Button } from '@/components/ui/button';
 import { FileText, DraftingCompass, FileCheck2, User, Package, Trash2 } from 'lucide-react';
 import { DetailDialog } from './DetailDialog';
 import { useStore } from '@/store/useStore';
+import { useAuthStore } from '@/features/sync/store/useAuthStore';
 import * as dbApi from '@/db/api';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import { formatDistanceToNow } from 'date-fns';
 
 interface FeedItemProps {
   item: FeedItemType;
@@ -58,6 +60,8 @@ export function FeedItem({ item }: FeedItemProps) {
   const customers = useStore((state) => state.customers);
   const templates = useStore((state) => state.templates);
   const currencySymbol = useStore((state) => state.currencySymbol);
+  
+  const { isLoggedIn } = useAuthStore();
 
   const handleClick = () => {
     if (item.itemType === 'Template') {
@@ -147,7 +151,7 @@ export function FeedItem({ item }: FeedItemProps) {
                 <div className="text-right">
                   <div className="flex justify-end mb-1">
                     <Badge className={`${getBadgeColor('Invoice')} font-medium`}>
-                      Invoice
+                      Record
                     </Badge>
                   </div>
                   <p className="text-lg font-semibold text-blue-700">{currencySymbol}{invoice.grandTotal.toFixed(2)}</p>
@@ -207,7 +211,7 @@ export function FeedItem({ item }: FeedItemProps) {
                <div className="flex items-start justify-between">
                  <div>
                    <CardTitle className="text-xl font-bold">Generated PDF</CardTitle>
-                   <CardDescription className="text-sm">For Invoice #{pdf.invoiceId.substring(0, 8)}</CardDescription>
+                   <CardDescription className="text-sm">For Record #{pdf.invoiceId.substring(0, 8)}</CardDescription>
                  </div>
                  <div className="text-right">
                    <div className="flex justify-end mb-1">
@@ -303,11 +307,31 @@ export function FeedItem({ item }: FeedItemProps) {
     <>
       <Card
         onClick={handleClick}
-        className={`hover:bg-accent transition-colors cursor-pointer border-l-4 ${getFeedTypeColor(item.itemType)}`}
+        className={`hover:bg-accent transition-colors cursor-pointer border-l-4 relative pb-6 ${getFeedTypeColor(item.itemType)}`}
       >
         <CardHeader>
           {renderContent()}
         </CardHeader>
+        <div className="absolute bottom-2 left-4 flex flex-col space-y-0.5">
+          <div className="flex items-center space-x-1.5">
+            {(() => {
+              const isSynced = isLoggedIn && item.lastSyncedAt && new Date(item.updatedAt) <= new Date(item.lastSyncedAt);
+              return (
+                <>
+                  <div className={`w-2 h-2 rounded-full ${isSynced ? 'bg-green-500' : 'bg-orange-400'}`} />
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+                    {isSynced ? 'Synced' : 'Local'}
+                  </span>
+                </>
+              );
+            })()}
+          </div>
+          {isLoggedIn && item.lastSyncedAt && new Date(item.updatedAt) <= new Date(item.lastSyncedAt) && (
+            <span className="text-[9px] text-muted-foreground pl-3.5">
+              Last synced: {formatDistanceToNow(new Date(item.lastSyncedAt), { addSuffix: true })}
+            </span>
+          )}
+        </div>
       </Card>
       <DetailDialog
         open={dialogOpen}

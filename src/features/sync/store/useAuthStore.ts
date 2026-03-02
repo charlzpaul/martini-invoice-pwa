@@ -1,6 +1,7 @@
 // src/features/sync/store/useAuthStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import * as dbApi from '@/db/api';
 
 interface UserProfile {
   sub: string;
@@ -15,7 +16,7 @@ interface AuthState {
   isLoggedIn: boolean;
   setToken: (token: string) => void;
   setProfile: (profile: UserProfile) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -26,7 +27,12 @@ export const useAuthStore = create<AuthState>()(
       isLoggedIn: false,
       setToken: (token) => set({ token, isLoggedIn: !!token }),
       setProfile: (profile) => set({ profile }),
-      logout: () => set({ token: null, profile: null, isLoggedIn: false }),
+      logout: async () => {
+        localStorage.removeItem('lastSyncTime');
+        await dbApi.clearAllLastSyncedAt();
+        set({ token: null, profile: null, isLoggedIn: false });
+        window.location.reload();
+      },
     }),
     {
       name: 'auth-storage', // localStorage key

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInvoiceStore } from './store/useInvoiceStore';
 import { useTemplateStore } from '@/features/template-builder/store/useTemplateStore';
+import { useStore } from '@/store/useStore';
 import { AppLayout } from '@/app/AppLayout';
 import { HeaderForm } from './components/HeaderForm';
 import { LineItemsTable } from './components/LineItemsTable';
@@ -27,6 +28,7 @@ export function InvoiceBuilderPage() {
     saveAsCopy,
   } = useInvoiceStore();
   const { activeTemplate, loadTemplate } = useTemplateStore();
+  const currencySymbol = useStore((state) => state.currencySymbol);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   useUnsavedChangesGuard(isDirty);
@@ -63,12 +65,12 @@ export function InvoiceBuilderPage() {
     }
     
     try {
-      toast.loading('Saving invoice...');
+      toast.loading('Saving record...');
       await saveInvoice();
       // Navigate directly to home page without showing success message
       navigate('/');
     } catch (error) {
-      toast.error('Failed to save invoice.');
+      toast.error('Failed to save record.');
     }
   };
 
@@ -85,7 +87,7 @@ export function InvoiceBuilderPage() {
             if (saved?.id) {
                 navigate(`/invoice/${saved.id}`);
             }
-            return 'Invoice copy created successfully!';
+            return 'Record copy created successfully!';
         },
         error: 'Failed to save copy.',
     });
@@ -118,6 +120,7 @@ export function InvoiceBuilderPage() {
         
         // Check if invoice needs to be saved
         console.log('2. Checking if invoice needs to be saved');
+        let invoiceToUse = activeInvoice;
         if (activeInvoice?.id === 'new' || isDirty) {
             // Validate required fields before saving
             if (!activeInvoice?.customerId || !activeInvoice?.templateId) {
@@ -129,23 +132,23 @@ export function InvoiceBuilderPage() {
                 return;
             }
             
-            toast.loading('Saving invoice before generating PDF...');
+            toast.loading('Saving record before generating PDF...');
             const savedInvoice = await saveInvoice();
             
             if (!savedInvoice) {
                 toast.dismiss(loadingToastId);
                 setIsGeneratingPdf(false);
-                toast.error("Failed to save invoice");
+                toast.error("Failed to save record");
                 return;
             }
             
-            // Update active invoice with saved data
-            // The store should already update activeInvoice, but we need to wait for it
-            toast.success('Invoice saved successfully');
+            // Use the saved invoice for PDF generation
+            invoiceToUse = savedInvoice;
+            toast.success('Record saved successfully');
         }
         
         // Generate PDF directly without storing in DB
-        if (!activeInvoice?.templateId) {
+        if (!invoiceToUse?.templateId) {
             toast.dismiss(loadingToastId);
             setIsGeneratingPdf(false);
             toast.error("Template Required", {
@@ -154,7 +157,7 @@ export function InvoiceBuilderPage() {
             return;
         }
         
-        const template = await dbApi.getTemplateById(activeInvoice.templateId);
+        const template = await dbApi.getTemplateById(invoiceToUse.templateId);
         if (!template) {
             toast.dismiss(loadingToastId);
             setIsGeneratingPdf(false);
@@ -166,8 +169,8 @@ export function InvoiceBuilderPage() {
 
         // Load customer data
         let customer = null;
-        if (activeInvoice.customerId) {
-            customer = await dbApi.getCustomerById(activeInvoice.customerId);
+        if (invoiceToUse.customerId) {
+            customer = await dbApi.getCustomerById(invoiceToUse.customerId);
         }
 
         // Import PDF generator dynamically
@@ -210,8 +213,8 @@ export function InvoiceBuilderPage() {
         await new Promise(resolve => setTimeout(resolve, 0));
         
         // Use toBlob() - it's the standard API
-        const pdfPromise = pdf(<DocumentComponent invoice={activeInvoice} template={template} customer={customer} />).toBlob();
-        console.log('6a. PDF promise created');
+        const pdfPromise = pdf(<DocumentComponent invoice={invoiceToUse} template={template} customer={customer} currencySymbol={currencySymbol || '$'} />).toBlob();
+        console.log('6c. PDF promise created');
         
         try {
           const pdfBlob = await Promise.race([pdfPromise, timeoutPromise]) as Blob;
@@ -230,7 +233,7 @@ export function InvoiceBuilderPage() {
               // Popup blocked or failed, fallback to download
               const link = document.createElement('a');
               link.href = url;
-              link.download = `invoice-${activeInvoice.invoiceNumber || 'document'}.pdf`;
+              link.download = `record-${invoiceToUse.invoiceNumber || 'document'}.pdf`;
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
@@ -245,7 +248,7 @@ export function InvoiceBuilderPage() {
             // Fallback to download
             const link = document.createElement('a');
             link.href = url;
-            link.download = `invoice-${activeInvoice.invoiceNumber || 'document'}.pdf`;
+            link.download = `record-${invoiceToUse.invoiceNumber || 'document'}.pdf`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -290,17 +293,17 @@ export function InvoiceBuilderPage() {
 
   return (
     <AppLayout>
-      {loading && <p>Loading invoice...</p>}
+      {loading && <p>Loading record...</p>}
       {error && <p className="text-destructive">Error: {error}</p>}
       {activeInvoice && (
-        <div className="space-y-8">
-          <header className="flex flex-col md:flex-row justify-between items-start gap-4">
+        <div className="space-y-8 pb-20">
+          <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 className="text-3xl font-bold">Invoice Builder</h1>
+                <h1 className="text-3xl font-bold">Record Builder</h1>
                 <p className="text-muted-foreground">
                     {activeInvoice.id === 'new'
-                        ? 'Creating a new invoice'
-                        : `Editing ${activeInvoice.nickname || `Invoice ${activeInvoice.invoiceNumber || '#' + activeInvoice.id.substring(0, 8)}`}`
+                        ? 'Creating a new record'
+                        : `Editing ${activeInvoice.nickname || `Record ${activeInvoice.invoiceNumber || '#' + activeInvoice.id.substring(0, 8)}`}`
                     }
                 </p>
             </div>
@@ -324,7 +327,7 @@ export function InvoiceBuilderPage() {
               {id !== 'new' && (
                 <Button variant="secondary" onClick={handleSaveAsCopy}>Save as Copy</Button>
               )}
-              <Button onClick={handleSave}>Save Invoice</Button>
+              <Button onClick={handleSave}>Save Record</Button>
             </div>
           </header>
           
@@ -335,4 +338,3 @@ export function InvoiceBuilderPage() {
     </AppLayout>
   );
 }
-

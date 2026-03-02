@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FilePlus2, PlusCircle, UserPlus, PackagePlus } from "lucide-react";
@@ -37,7 +38,7 @@ export function QuickActions() {
     navigate('/template/new');
   };
 
-  const handleCreateInvoice = () => {
+  const handleCreateRecord = () => {
     navigate('/invoice/new');
   };
 
@@ -126,8 +127,8 @@ export function QuickActions() {
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Button variant="default" size="lg" onClick={handleCreateInvoice}>
-          <FilePlus2 className="mr-2 h-4 w-4" /> Create New Invoice
+        <Button variant="default" size="lg" onClick={handleCreateRecord}>
+          <FilePlus2 className="mr-2 h-4 w-4" /> Create New Record
         </Button>
         <Button variant="default" size="lg" onClick={handleCreateTemplate}>
           <PlusCircle className="mr-2 h-4 w-4" /> Create New Template
@@ -186,12 +187,12 @@ export function QuickActions() {
                 <Label htmlFor="customer-address" className="text-right">
                   Address
                 </Label>
-                <Input
+                <Textarea
                   id="customer-address"
                   value={customerForm.address}
                   onChange={(e) => setCustomerForm({...customerForm, address: e.target.value})}
                   className="col-span-3"
-                  placeholder="123 Main St, City, State ZIP"
+                  placeholder="123 Main St, City, State, ZIP"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -217,7 +218,7 @@ export function QuickActions() {
             </div>
           </DialogContent>
         </Dialog>
-
+        
         {/* Add Product Dialog */}
         <Dialog open={productDialogOpen} onOpenChange={setProductDialogOpen}>
           <DialogTrigger asChild>
@@ -227,7 +228,7 @@ export function QuickActions() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>Add New Product</DialogTitle>
+              <DialogTitle>Add New Product/Service</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
@@ -249,8 +250,8 @@ export function QuickActions() {
                 <Input
                   id="product-rate"
                   type="number"
-                  min="0"
                   step="0.01"
+                  min="0"
                   value={productForm.defaultRate}
                   onChange={(e) => setProductForm({...productForm, defaultRate: e.target.value})}
                   className="col-span-3"
@@ -259,13 +260,13 @@ export function QuickActions() {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="product-quantity" className="text-right">
-                  Default Quantity *
+                  Default Quantity
                 </Label>
                 <Input
                   id="product-quantity"
                   type="number"
+                  step="0.01"
                   min="0"
-                  step="1"
                   value={productForm.defaultQuantity}
                   onChange={(e) => setProductForm({...productForm, defaultQuantity: e.target.value})}
                   className="col-span-3"
@@ -276,12 +277,7 @@ export function QuickActions() {
                 <Label htmlFor="product-unit" className="text-right">
                   Unit
                 </Label>
-                <Select
-                  value={productForm.unit}
-                  onValueChange={(value: 'hour' | 'item' | 'service') =>
-                    setProductForm({...productForm, unit: value})
-                  }
-                >
+                <Select value={productForm.unit} onValueChange={(value: 'hour' | 'item' | 'service') => setProductForm({...productForm, unit: value})}>
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select unit" />
                   </SelectTrigger>

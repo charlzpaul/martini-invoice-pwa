@@ -1,4 +1,4 @@
-# Martini Shot Invoices - Project Status & Roadmap
+# Martini Records - Project Status & Roadmap
 
 **Instructions for AI Agents:** This document is the single source of truth for the project's progress. Before starting any work, review this file to understand the current state. **After completing any significant task (e.g., creating a new component, adding a library, implementing a feature), you MUST update this file to reflect the changes.** This includes checking off completed tasks and adding notes where necessary.
 
@@ -6,7 +6,7 @@
 
 ## Overall Objective
 
-Build an offline-first, industry-leading Progressive Web App (PWA) for generating custom invoices using React, TypeScript, Tailwind CSS, Zustand, and IndexedDB. The app will feature a template builder, customer/product management, dynamic invoice generation, PDF export, and Google Drive synchronization.
+Build an offline-first, industry-leading Progressive Web App (PWA) for generating custom records using React, TypeScript, Tailwind CSS, Zustand, and IndexedDB. The app will feature a template builder, customer/product management, dynamic record generation, PDF export, and Google Drive synchronization.
 
 ---
 

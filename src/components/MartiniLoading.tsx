@@ -26,50 +26,55 @@ export function MartiniLoading() {
           {/* Glass Stem */}
           <line
             x1="60"
-            y1="120"
+            y1="106.6"
             x2="60"
             y2="160"
-            stroke="rgb(71, 48, 33)"
+            stroke="currentColor"
             strokeWidth="4"
             strokeLinecap="round"
+            className="text-foreground/60"
           />
           {/* Glass Base */}
           <ellipse
             cx="60"
-            cy="160"
-            rx="30"
-            ry="8"
-            fill="rgb(71, 48, 33)"
+            cy="165"
+            rx="45"
+            ry="10"
+            fill="currentColor"
+            className="text-foreground/60"
           />
           {/* Glass Body */}
           <path
-            d="M30 20 Q30 120 60 120 Q90 120 90 20 Z"
+            d="M10 20 L110 20 L60 106.6 Z"
             fill="none"
-            stroke="rgb(71, 48, 33)"
+            stroke="currentColor"
             strokeWidth="6"
             strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-foreground/60"
           />
           {/* Liquid Line */}
           <path
-            d="M35 35 Q35 110 60 110 Q85 110 85 35 Z"
-            fill="rgb(125, 157, 93)"
-            opacity="0.7"
+            d="M22 40 L98 40 L60 106.6 Z"
+            fill="hsl(var(--primary))"
+            opacity="0.8"
           />
           {/* Olive */}
           <circle
-            cx="60"
-            cy="40"
+            cx="68"
+            cy="75"
             r="8"
-            fill="rgb(125, 157, 93)"
-            stroke="rgb(91, 125, 65)"
+            fill="hsl(var(--primary))"
+            stroke="hsl(var(--primary)/0.8)"
             strokeWidth="2"
           />
           {/* Olive Pit */}
           <circle
-            cx="60"
-            cy="40"
+            cx="68"
+            cy="75"
             r="3"
-            fill="rgb(65, 95, 45)"
+            fill="hsl(var(--accent))"
+            opacity="0.8"
           />
           {/* Sparkles */}
           <g className="sparkles">
@@ -87,7 +92,7 @@ export function MartiniLoading() {
                   y1={40 + i * 20}
                   x2={30 + i * 30}
                   y2={30 + i * 20}
-                  stroke="rgb(237, 137, 23)"
+                  stroke="hsl(var(--secondary))"
                   strokeWidth="2"
                 />
                 <line
@@ -95,28 +100,27 @@ export function MartiniLoading() {
                   y1={40 + i * 20}
                   x2={30 + i * 30 + 8}
                   y2={40 + i * 20 - 8}
-                  stroke="rgb(237, 137, 23)"
+                  stroke="hsl(var(--secondary))"
                   strokeWidth="2"
                 />
               </g>
             ))}
           </g>
+          {/* Glass Reflection */}
+          <path
+            d="M20 30 L40 30"
+            fill="none"
+            stroke="white"
+            strokeWidth="4"
+            opacity="0.3"
+            strokeLinecap="round"
+          />
         </svg>
-
-        {/* Glass Reflection */}
-        <path
-          d="M35 25 Q40 100 60 100 Q80 100 85 25"
-          fill="none"
-          stroke="white"
-          strokeWidth="2"
-          opacity="0.3"
-          strokeLinecap="round"
-        />
       </div>
 
       {/* App Name */}
       <h1 className="mt-8 text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-        Martini Shot Invoices
+        Martini Records
       </h1>
       
       {/* Loading Text */}

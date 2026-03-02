@@ -23,8 +23,8 @@ export const SimpleInvoiceDocument: React.FC<SimpleInvoiceDocumentProps> = ({ in
   return (
     <Document>
       <Page size={paperSize} style={styles.page}>
-        <Text>Test Invoice</Text>
-        <Text>Invoice Number: {invoice.invoiceNumber || 'N/A'}</Text>
+        <Text>Test Record</Text>
+        <Text>Record Number: {invoice.invoiceNumber || 'N/A'}</Text>
         <Text>Total: ${invoice.grandTotal.toFixed(2)}</Text>
       </Page>
     </Document>

@@ -1,5 +1,5 @@
 // src/features/invoice-builder/components/LineItemsTable.tsx
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useInvoiceStore } from '../store/useInvoiceStore';
 import { useStore } from '@/store/useStore';
 import { useTemplateStore } from '@/features/template-builder/store/useTemplateStore';
@@ -13,25 +13,97 @@ import {
 } from "@/components/ui/table";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { TypeableSelect } from '@/components/ui/typeable-select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Trash2 } from 'lucide-react';
 import type { LineItem } from '@/db/models';
+import { isValidNumericInput, formatNumericValue } from '@/lib/utils';
+import { toast } from 'sonner';
+import * as dbApi from '@/db/api';
 
 export function LineItemsTable() {
   const { activeInvoice, setLineItems, setAdjustmentValue } = useInvoiceStore();
   const { activeTemplate } = useTemplateStore();
   const products = useStore((state) => state.products);
+  const fetchDashboardData = useStore((state) => state.fetchDashboardData);
   const currencySymbol = useStore((state) => state.currencySymbol);
   const prevTemplateIdRef = useRef<string | null>(null);
   const prevTemplateHashRef = useRef<string | null>(null);
+  const [adjustmentInputValues, setAdjustmentInputValues] = useState<Record<string, string>>({});
+  const [productDialogOpen, setProductDialogOpen] = useState(false);
+  const [newProductForm, setNewProductForm] = useState({
+    name: '',
+    defaultRate: '',
+    defaultQuantity: '1',
+    unit: 'item' as 'hour' | 'item' | 'service'
+  });
 
   if (!activeInvoice) return null;
+
+  // Prepare product options for TypeableSelect
+  const productOptions = products.map(product => ({
+    id: product.id,
+    label: product.name,
+    value: product.id,
+    description: `${currencySymbol}${product.defaultRate}/${product.unit}`
+  }));
+
+  // Add a "Custom item" option
+  const allProductOptions = [
+    {
+      id: 'custom',
+      label: 'Custom item...',
+      value: 'custom'
+    },
+    ...productOptions
+  ];
+
+  const handleAddProduct = async () => {
+    try {
+      if (!newProductForm.name.trim()) {
+        toast.error('Validation Error', { description: 'Product name is required' });
+        return;
+      }
+
+      const defaultRate = parseFloat(newProductForm.defaultRate);
+      if (isNaN(defaultRate) || defaultRate < 0) {
+        toast.error('Validation Error', { description: 'Please enter a valid rate' });
+        return;
+      }
+
+      const defaultQuantity = parseFloat(newProductForm.defaultQuantity);
+      if (isNaN(defaultQuantity) || defaultQuantity < 0) {
+        toast.error('Validation Error', { description: 'Please enter a valid quantity' });
+        return;
+      }
+
+      await dbApi.saveProduct({
+        name: newProductForm.name.trim(),
+        defaultRate,
+        defaultQuantity,
+        unit: newProductForm.unit
+      });
+
+      toast.success('Product Added', { description: `${newProductForm.name} has been added successfully` });
+      
+      // Reset form
+      setNewProductForm({
+        name: '',
+        defaultRate: '',
+        defaultQuantity: '1',
+        unit: 'item'
+      });
+      
+      setProductDialogOpen(false);
+      
+      // Refresh dashboard data
+      fetchDashboardData();
+    } catch (error) {
+      console.error('Error adding product:', error);
+      toast.error('Error', { description: 'Failed to add product' });
+    }
+  };
 
   // Get template layers for totals calculation
   const templateLayers = activeTemplate?.totalsBlockGroupedLayers || [];
@@ -77,9 +149,15 @@ export function LineItemsTable() {
         }
 
         // Recalculate amount with new percentage value
-        const qty = Number(updatedItem.qty) || 0;
-        const rate = Number(updatedItem.rate) || 0;
-        const percentageValue = Number(updatedItem.percentageValue) || 0;
+        // Safely parse values, treating NaN as 0
+        const parseSafe = (val: any): number => {
+          const num = Number(val);
+          return isNaN(num) ? 0 : num;
+        };
+        
+        const qty = parseSafe(updatedItem.qty);
+        const rate = parseSafe(updatedItem.rate);
+        const percentageValue = parseSafe(updatedItem.percentageValue);
         
         let amount = qty * rate;
         if (activeTemplate.hasPercentageColumn && percentageValue > 0) {
@@ -103,14 +181,39 @@ export function LineItemsTable() {
   }, [activeTemplate, activeInvoice, setLineItems, templateLayers]);
 
   const handleLineItemChange = (id: string, field: keyof LineItem, value: string | number) => {
+    let finalValue: string | number = value;
+    
+    // For numeric fields (qty, rate, percentageValue), validate the input
+    if (field === 'qty' || field === 'rate' || field === 'percentageValue') {
+      const stringValue = String(value);
+      
+      // Allow empty string for clearing (treat as 0)
+      if (stringValue === '') {
+        finalValue = 0; // Store as 0 instead of empty string
+      } else if (!isValidNumericInput(stringValue)) {
+        // Invalid input, don't update
+        return;
+      } else {
+        // Store the string value for intermediate states like ".", "-", "-."
+        // These will be parsed as 0 in calculations
+        finalValue = stringValue;
+      }
+    }
+    
     const updatedLineItems = activeInvoice.lineItems.map(item => {
       if (item.id === id) {
-        const newItem = { ...item, [field]: value };
+        const newItem = { ...item, [field]: finalValue };
         // Recalculate amount if rate, qty, or percentageValue changes
         if (field === 'qty' || field === 'rate' || field === 'percentageValue') {
-            const qty = Number(newItem.qty) || 0;
-            const rate = Number(newItem.rate) || 0;
-            const percentageValue = Number(newItem.percentageValue) || 0;
+            // Safely parse values, treating NaN as 0
+            const parseSafe = (val: any): number => {
+              const num = Number(val);
+              return isNaN(num) ? 0 : num;
+            };
+            
+            const qty = parseSafe(newItem.qty);
+            const rate = parseSafe(newItem.rate);
+            const percentageValue = parseSafe(newItem.percentageValue);
             
             // Calculate base amount
             let amount = qty * rate;
@@ -190,71 +293,71 @@ export function LineItemsTable() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="min-w-full inline-block align-middle">
-          <Table className="min-w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="min-w-[120px] sm:min-w-[150px] md:min-w-[200px] sm:w-[50%]">Item</TableHead>
-                <TableHead className="min-w-[70px] sm:min-w-[80px]">Qty</TableHead>
-                <TableHead className="min-w-[70px] sm:min-w-[80px]">Rate</TableHead>
-                {activeTemplate?.hasPercentageColumn && (
-                  <TableHead className="min-w-[70px] sm:min-w-[80px]">{activeTemplate.percentageColumnHeader || 'Percentage'}</TableHead>
-                )}
-                <TableHead className="min-w-[80px] sm:min-w-[100px] text-right">Amount</TableHead>
-                <TableHead className="min-w-[40px] sm:min-w-[50px] text-center">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {activeInvoice.lineItems.map(item => (
-                <TableRow key={item.id} data-testid="line-item-row">
-                  <TableCell className="py-2 sm:py-3">
-                    <div className="flex flex-col gap-2">
-                      <Select
-                        value={item.itemName}
-                        onValueChange={(value) => {
-                          if (value === 'custom') {
-                            // Keep custom input
-                          } else {
-                            handleProductSelect(item.id, value);
-                          }
-                        }}
-                      >
-                        <SelectTrigger className="min-w-[100px] sm:min-w-[150px] text-sm sm:text-base">
-                          <SelectValue placeholder="Select product" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="custom">Custom item...</SelectItem>
-                          {products.map((product) => (
-                            <SelectItem key={product.id} value={product.id}>
-                              {product.name} ({currencySymbol}{product.defaultRate}/{product.unit})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        value={item.itemName}
-                        onChange={(e) => handleLineItemChange(item.id, 'itemName', e.target.value)}
-                        placeholder="Or type custom item name"
-                        className="min-w-[100px] sm:min-w-[150px] text-sm sm:text-base"
-                      />
-                    </div>
-                  </TableCell>
+    <>
+      <div className="space-y-4">
+        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="min-w-full inline-block align-middle">
+            <Table className="min-w-full">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[120px] sm:min-w-[150px] md:min-w-[200px] sm:w-[50%]">Item</TableHead>
+                  <TableHead className="min-w-[70px] sm:min-w-[80px]">Qty</TableHead>
+                  <TableHead className="min-w-[70px] sm:min-w-[80px]">Rate</TableHead>
+                  {activeTemplate?.hasPercentageColumn && (
+                    <TableHead className="min-w-[70px] sm:min-w-[80px]">{activeTemplate.percentageColumnHeader || 'Percentage'}</TableHead>
+                  )}
+                  <TableHead className="min-w-[80px] sm:min-w-[100px] text-right">Amount</TableHead>
+                  <TableHead className="min-w-[40px] sm:min-w-[50px] text-center">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {activeInvoice.lineItems.map(item => (
+                  <TableRow key={item.id} data-testid="line-item-row">
+                    <TableCell className="py-2 sm:py-3">
+                      <div className="flex flex-col gap-2">
+                        <TypeableSelect
+                          options={allProductOptions}
+                          value={item.itemName ? (products.find(p => p.name === item.itemName)?.id || 'custom') : undefined}
+                          onValueChange={(value) => {
+                            if (value === 'custom') {
+                              // Keep custom input - clear any product selection
+                              handleLineItemChange(item.id, 'itemName', '');
+                            } else {
+                              handleProductSelect(item.id, value);
+                            }
+                          }}
+                          placeholder="Select product..."
+                          searchPlaceholder="Search products..."
+                          emptyMessage="No products found."
+                          showAddNew={true}
+                          onAddNew={() => setProductDialogOpen(true)}
+                          addNewLabel="Add new product"
+                          className="min-w-[100px] sm:min-w-[150px] text-sm"
+                        />
+                        <Input
+                          value={item.itemName}
+                          onChange={(e) => handleLineItemChange(item.id, 'itemName', e.target.value)}
+                          placeholder="Or type custom item name"
+                          className="min-w-[100px] sm:min-w-[150px] text-sm sm:text-base"
+                        />
+                      </div>
+                    </TableCell>
                   <TableCell className="py-2 sm:py-3">
                     <Input
-                      type="number"
-                      value={item.qty}
-                      onChange={(e) => handleLineItemChange(item.id, 'qty', Number(e.target.value))}
+                      type="text"
+                      inputMode="decimal"
+                      value={formatNumericValue(item.qty)}
+                      onChange={(e) => handleLineItemChange(item.id, 'qty', e.target.value)}
                       className="min-w-[60px] sm:min-w-[80px] text-sm sm:text-base"
                     />
                   </TableCell>
                   <TableCell className="py-2 sm:py-3">
                     <div className="flex items-center gap-1">
                       <Input
-                        type="number"
-                        value={item.rate}
-                        onChange={(e) => handleLineItemChange(item.id, 'rate', Number(e.target.value))}
+                        type="text"
+                        inputMode="decimal"
+                        value={formatNumericValue(item.rate)}
+                        onChange={(e) => handleLineItemChange(item.id, 'rate', e.target.value)}
                         className="min-w-[60px] sm:min-w-[80px] text-sm sm:text-base"
                       />
                       <span className="text-sm text-muted-foreground whitespace-nowrap">
@@ -266,11 +369,10 @@ export function LineItemsTable() {
                     <TableCell className="py-2 sm:py-3">
                       <div className="flex items-center gap-1">
                         <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={item.percentageValue || ''}
-                          onChange={(e) => handleLineItemChange(item.id, 'percentageValue', Number(e.target.value) || 0)}
+                          type="text"
+                          inputMode="decimal"
+                          value={formatNumericValue(item.percentageValue || 0)}
+                          onChange={(e) => handleLineItemChange(item.id, 'percentageValue', e.target.value)}
                           className="min-w-[60px] sm:min-w-[80px] text-sm sm:text-base"
                         />
                         <span className="text-sm text-muted-foreground whitespace-nowrap">%</span>
@@ -335,15 +437,58 @@ export function LineItemsTable() {
                           ) : (
                             <div className="flex items-center gap-1">
                               <Input
-                                type="number"
-                                value={activeInvoice.adjustmentValues?.[layer.id] ?? layer.value ?? 0}
+                                type="text"
+                                inputMode="decimal"
+                                value={adjustmentInputValues[layer.id] !== undefined
+                                  ? adjustmentInputValues[layer.id]
+                                  : formatNumericValue(activeInvoice.adjustmentValues?.[layer.id] ?? layer.value ?? 0)}
                                 onChange={(e) => {
-                                  const newValue = parseFloat(e.target.value) || 0;
-                                  setAdjustmentValue(layer.id, newValue, adjustmentLayers);
+                                  const stringValue = e.target.value;
+                                  if (stringValue === '' || isValidNumericInput(stringValue)) {
+                                    // Store the string value in local state for intermediate states
+                                    setAdjustmentInputValues(prev => ({
+                                      ...prev,
+                                      [layer.id]: stringValue
+                                    }));
+                                    
+                                    // If the input is a complete number (not intermediate state), update the store
+                                    if (stringValue !== '' &&
+                                        stringValue !== '-' &&
+                                        stringValue !== '.' &&
+                                        stringValue !== '-.' &&
+                                        !stringValue.endsWith('.')) {
+                                      const parsed = parseFloat(stringValue);
+                                      if (!isNaN(parsed)) {
+                                        setAdjustmentValue(layer.id, parsed, adjustmentLayers);
+                                      }
+                                    } else if (stringValue === '') {
+                                      // Empty string means 0
+                                      setAdjustmentValue(layer.id, 0, adjustmentLayers);
+                                    }
+                                  }
+                                }}
+                                onBlur={() => {
+                                  // When the input loses focus, finalize the value
+                                  const stringValue = adjustmentInputValues[layer.id];
+                                  if (stringValue !== undefined) {
+                                    let finalValue: number;
+                                    if (stringValue === '' || stringValue === '-' || stringValue === '.' || stringValue === '-.') {
+                                      finalValue = 0;
+                                    } else {
+                                      const parsed = parseFloat(stringValue);
+                                      finalValue = isNaN(parsed) ? 0 : parsed;
+                                    }
+                                    setAdjustmentValue(layer.id, finalValue, adjustmentLayers);
+                                    // Clear the local string value so the display uses formatNumericValue
+                                    setAdjustmentInputValues(prev => {
+                                      const newValues = { ...prev };
+                                      delete newValues[layer.id];
+                                      return newValues;
+                                    });
+                                  }
                                 }}
                                 className="h-6 w-20 text-xs"
                                 placeholder="Value"
-                                step="0.01"
                               />
                               <span className="text-xs text-muted-foreground">
                                 (fixed)
@@ -362,7 +507,73 @@ export function LineItemsTable() {
                     <span>{currencySymbol}{activeInvoice.grandTotal.toFixed(2)}</span>
                 </div>
             </div>
+        </div>
       </div>
-    </div>
+
+      {/* Add Product Dialog */}
+      <Dialog open={productDialogOpen} onOpenChange={setProductDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Product</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="product-name">Name *</Label>
+              <Input
+                id="product-name"
+                value={newProductForm.name}
+                onChange={(e) => setNewProductForm({...newProductForm, name: e.target.value})}
+                placeholder="Product name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="product-rate">Default Rate ({currencySymbol}) *</Label>
+              <Input
+                id="product-rate"
+                type="number"
+                min="0"
+                step="0.01"
+                value={newProductForm.defaultRate}
+                onChange={(e) => setNewProductForm({...newProductForm, defaultRate: e.target.value})}
+                placeholder="0.00"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="product-quantity">Default Quantity *</Label>
+              <Input
+                id="product-quantity"
+                type="number"
+                min="0"
+                step="1"
+                value={newProductForm.defaultQuantity}
+                onChange={(e) => setNewProductForm({...newProductForm, defaultQuantity: e.target.value})}
+                placeholder="1"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="product-unit">Unit</Label>
+              <select
+                id="product-unit"
+                value={newProductForm.unit}
+                onChange={(e) => setNewProductForm({...newProductForm, unit: e.target.value as 'hour' | 'item' | 'service'})}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="item">Item</option>
+                <option value="hour">Hour</option>
+                <option value="service">Service</option>
+              </select>
+            </div>
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setProductDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddProduct}>
+                Add Product
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

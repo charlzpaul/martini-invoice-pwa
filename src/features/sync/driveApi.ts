@@ -4,8 +4,15 @@ import { useAuthStore } from './store/useAuthStore';
 
 const DRIVE_API_URL = 'https://www.googleapis.com/drive/v3';
 const DRIVE_UPLOAD_URL = 'https://www.googleapis.com/upload/drive/v3';
-const APP_DATA_FILE_NAME = 'martinishot-data.json';
-const APP_DATA_FOLDER = 'MartiniShot-Invoices';
+const APP_DATA_FOLDER = 'Martini-Records-Backup';
+
+export const FILE_NAMES = {
+    RECORDS: 'records.json',
+    TEMPLATES: 'templates.json',
+    CUSTOMERS: 'customers.json',
+    PRODUCTS: 'products.json',
+    SETTINGS: 'settings.json'
+};
 
 async function getHeaders() {
     const token = useAuthStore.getState().token;
@@ -45,14 +52,14 @@ async function getAppDataFolderId(): Promise<string> {
 }
 
 
-// Function to get the app data file's metadata (if it exists)
-export async function getAppDataFile() {
+// Function to get a file's metadata (if it exists)
+export async function getFileMetadata(fileName: string) {
     const folderId = await getAppDataFolderId();
     
     const response = await axios.get(`${DRIVE_API_URL}/files`, {
         headers: await getHeaders(),
         params: {
-            q: `'${folderId}' in parents and name='${APP_DATA_FILE_NAME}' and trashed=false`,
+            q: `'${folderId}' in parents and name='${fileName}' and trashed=false`,
             fields: 'files(id, name, modifiedTime)',
         },
     });
@@ -60,8 +67,8 @@ export async function getAppDataFile() {
     return response.data.files.length > 0 ? response.data.files[0] : null;
 }
 
-// Function to download the app data file
-export async function downloadAppData(fileId: string) {
+// Function to download a file by ID
+export async function downloadFile(fileId: string) {
     const response = await axios.get(`${DRIVE_API_URL}/files/${fileId}`, {
         headers: await getHeaders(),
         params: { alt: 'media' },
@@ -69,35 +76,56 @@ export async function downloadAppData(fileId: string) {
     return response.data;
 }
 
-// Function to upload/update the app data file
-export async function uploadAppData(content: object) {
+// Function to upload/update a file
+export async function uploadFile(fileName: string, content: object) {
     const folderId = await getAppDataFolderId();
-    const fileMetadata = await getAppDataFile();
+    const fileMetadata = await getFileMetadata(fileName);
     
-    const metadata = {
-        name: APP_DATA_FILE_NAME,
-        mimeType: 'application/json',
-        parents: [folderId],
-    };
-
-    const fileContent = new Blob([JSON.stringify(content)], { type: 'application/json' });
+    const fileContent = JSON.stringify(content);
     
-    const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-    form.append('file', fileContent);
+    if (fileMetadata) {
+        // Update existing file content only - much safer with PATCH
+        await axios({
+            method: 'PATCH',
+            url: `${DRIVE_UPLOAD_URL}/files/${fileMetadata.id}?uploadType=media`,
+            data: fileContent,
+            headers: {
+                Authorization: `Bearer ${useAuthStore.getState().token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+    } else {
+        // Create new file with metadata and content
+        const metadata = {
+            name: fileName,
+            mimeType: 'application/json',
+            parents: [folderId],
+        };
 
-    const uploadUrl = fileMetadata 
-        ? `${DRIVE_UPLOAD_URL}/files/${fileMetadata.id}?uploadType=multipart`
-        : `${DRIVE_UPLOAD_URL}/files?uploadType=multipart`;
-    
-    const method = fileMetadata ? 'PATCH' : 'POST';
+        const form = new FormData();
+        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+        form.append('file', new Blob([fileContent], { type: 'application/json' }));
 
-    await axios({
-        method,
-        url: uploadUrl,
-        data: form,
-        headers: {
-            Authorization: `Bearer ${useAuthStore.getState().token}`,
-        },
-    });
+        await axios({
+            method: 'POST',
+            url: `${DRIVE_UPLOAD_URL}/files?uploadType=multipart`,
+            data: form,
+            headers: {
+                Authorization: `Bearer ${useAuthStore.getState().token}`,
+            },
+        });
+    }
+}
+
+// Legacy support (to be removed once useDataSync is updated)
+export async function getAppDataFile() {
+    return getFileMetadata('martinishot-data.json');
+}
+
+export async function downloadAppData(fileId: string) {
+    return downloadFile(fileId);
+}
+
+export async function uploadAppData(content: object) {
+    return uploadFile('martinishot-data.json', content);
 }

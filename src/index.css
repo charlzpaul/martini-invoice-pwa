@@ -31,6 +31,28 @@
   --radius: 0.5rem;
 }
 
+.dark {
+  --background: 220 28% 9%;       /* Midnight Gin - Deep cool charcoal */
+  --foreground: 210 20% 96%;       /* Gin Frost - Icy white */
+  --card: 220 28% 12%;             /* Chilled Glass surface */
+  --card-foreground: 210 20% 96%;
+  --popover: 220 28% 12%;
+  --popover-foreground: 210 20% 96%;
+  --primary: 84 18% 45%;           /* Sophisticated Olive Garnish */
+  --primary-foreground: 210 20% 10%;
+  --secondary: 42 10% 65%;         /* Dry Vermouth Straw */
+  --secondary-foreground: 210 20% 10%;
+  --muted: 220 15% 20%;
+  --muted-foreground: 215 15% 70%;
+  --accent: 0 72% 51%;             /* Pimento Red Accent */
+  --accent-foreground: 210 20% 98%;
+  --destructive: 0 62.8% 35.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 220 15% 22%;
+  --input: 220 15% 22%;
+  --ring: 84 18% 45%;
+}
+
 @theme {
   /* Map CSS variables to Tailwind v4 theme */
   --color-primary: hsl(var(--primary));

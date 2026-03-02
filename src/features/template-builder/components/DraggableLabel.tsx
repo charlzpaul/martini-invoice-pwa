@@ -69,12 +69,14 @@ export function DraggableLabel({ label, isSelected }: DraggableLabelProps) {
           isSelected && "outline-2 outline-dashed outline-accent outline-offset-2"
         )}
       >
-        <div className="w-full h-full p-1 overflow-visible">
+        <div className="w-full h-full p-0 overflow-visible" style={{ margin: '-2px' }}>
           <span style={{
             fontSize: label.fontSize,
             fontFamily: label.fontFamily || 'Arial',
             whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word'
+            wordBreak: 'break-word',
+            lineHeight: 1,
+            display: 'block'
           }}>
             {label.textValue}
           </span>

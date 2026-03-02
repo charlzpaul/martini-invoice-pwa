@@ -3,7 +3,8 @@ import { create } from 'zustand';
 import type { Invoice, LineItem } from '@/db/models';
 import * as dbApi from '@/db/api';
 import { saveGeneratedPdfForInvoice } from '@/features/pdf/generatePdf';
-import { notifyDataChange } from '@/features/sync/hooks/useDataSync';
+import { notifyDataChange } from '@/db/events';
+import { useStore } from '@/store/useStore';
 
 interface InvoiceState {
   activeInvoice: Invoice | null;
@@ -22,13 +23,28 @@ interface InvoiceState {
   generatePdf: () => Promise<void>;
 }
 
+// Helper function to safely parse numeric values from strings or numbers
+const parseNumber = (value: any): number => {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? 0 : parsed;
+  }
+  return 0;
+};
+
 const recalculateTotals = (
   lineItems: LineItem[],
   templateLayers?: Array<{name: string, type?: 'percentage' | 'value', percentage: number, value?: number, isVisible: boolean, id?: string}>,
   adjustmentValues?: Record<string, number>
 ): Pick<Invoice, 'subtotal' | 'taxAmount' | 'grandTotal' | 'appliedFees'> => {
     // Subtotal is sum of (rate * quantity) for all line items (excluding percentage adjustments)
-    const subtotal = lineItems.reduce((acc, item) => acc + (item.rate * item.qty), 0);
+    // Use parseNumber to handle string values safely
+    const subtotal = lineItems.reduce((acc, item) => {
+      const rate = parseNumber(item.rate);
+      const qty = parseNumber(item.qty);
+      return acc + (rate * qty);
+    }, 0);
     
     // Calculate applied fees based on template layers
     const appliedFees: Record<string, number> = {};

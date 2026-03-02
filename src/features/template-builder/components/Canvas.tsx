@@ -273,11 +273,11 @@ function DraggableLineItemArea({ scaleX, scaleY }: DraggableLineItemAreaProps) {
               </tr>
             </thead>
             <tbody>
-              <tr className="bg-accent/5">
+              <tr className="bg-muted">
                 {columnWidths.map((width, index) => (
                   <td
                     key={index}
-                    className="border border-accent/30 p-1 text-accent-foreground/60"
+                    className="border border-accent/30 p-1 text-black"
                     style={{
                       width: `${width}px`,
                       minWidth: `${width}px`,
@@ -298,7 +298,7 @@ function DraggableLineItemArea({ scaleX, scaleY }: DraggableLineItemAreaProps) {
                 {columnWidths.map((width, index) => (
                   <td
                     key={index}
-                    className="border border-accent/30 p-1 text-accent-foreground/60"
+                    className="border border-accent/30 p-1 text-black"
                     style={{
                       width: `${width}px`,
                       minWidth: `${width}px`,
@@ -315,9 +315,9 @@ function DraggableLineItemArea({ scaleX, scaleY }: DraggableLineItemAreaProps) {
                   </td>
                 ))}
               </tr>
-              <tr className="bg-accent/5">
+              <tr className="bg-muted">
                 <td
-                  className="border border-accent/30 p-1 text-accent-foreground/60"
+                  className="border border-accent/30 p-1 text-black"
                   colSpan={columnHeaders.length}
                   style={{
                     textAlign: 'center',

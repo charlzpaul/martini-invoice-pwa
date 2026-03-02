@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import type { Template } from '@/db/models';
 import * as dbApi from '@/db/api';
-import { notifyDataChange } from '@/features/sync/hooks/useDataSync';
+import { notifyDataChange } from '@/db/events';
 
 interface TemplateState {
   // The original template, as it exists in the database.

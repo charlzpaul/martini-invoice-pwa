@@ -6,7 +6,8 @@ import { InvoiceDocument } from './InvoiceDocument';
 
 export async function generatePdfForInvoice(
     invoice: Invoice,
-    template: Template
+    template: Template,
+    currencySymbol: string = '$'
 ): Promise<Blob> {
     // Load customer data before generating PDF
     let customer = null;
@@ -14,15 +15,16 @@ export async function generatePdfForInvoice(
         customer = await dbApi.getCustomerById(invoice.customerId);
     }
     
-    const pdfBlob = await pdf(<InvoiceDocument invoice={invoice} template={template} customer={customer} />).toBlob();
+    const pdfBlob = await pdf(<InvoiceDocument invoice={invoice} template={template} customer={customer} currencySymbol={currencySymbol} />).toBlob();
     return pdfBlob;
 }
 
 export async function saveGeneratedPdfForInvoice(
     invoice: Invoice,
-    template: Template
+    template: Template,
+    currencySymbol: string = '$'
 ): Promise<GeneratedPDF> {
-    const pdfBlob = await generatePdfForInvoice(invoice, template);
+    const pdfBlob = await generatePdfForInvoice(invoice, template, currencySymbol);
 
     const newPdf: Omit<GeneratedPDF, 'id' | 'createdAt' | 'updatedAt'> = {
         invoiceId: invoice.id,
