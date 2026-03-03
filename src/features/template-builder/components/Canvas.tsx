@@ -29,7 +29,7 @@ function DraggableLineItemArea({ scaleX, scaleY }: DraggableLineItemAreaProps) {
   const [resizeStartX, setResizeStartX] = useState(0);
   const [resizeStartWidths, setResizeStartWidths] = useState<number[]>([]);
   const [isColumnResizing, setIsColumnResizing] = useState(false);
-  const [elementRect, setElementRect] = useState<DOMRect | null>(null);
+
   
   // Use a ref for immediate access to column resizing state
   const isColumnResizingRef = useRef(false);

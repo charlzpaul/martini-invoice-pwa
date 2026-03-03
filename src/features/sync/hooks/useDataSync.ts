@@ -1,11 +1,11 @@
 // src/features/sync/hooks/useDataSync.ts
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useStore } from '@/store/useStore';
 import * as driveApi from '../driveApi';
 import * as dbApi from '@/db/api';
 import { toast } from 'sonner';
-import type { Template, Customer, Product, Invoice } from '@/db/models';
+
 
 export { notifyDataChange } from '@/db/events';
 

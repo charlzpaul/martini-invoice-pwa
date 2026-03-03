@@ -5,7 +5,7 @@ import { QuickActions } from './QuickActions';
 import { FeedList } from './FeedList';
 import { AppLayout } from '@/app/AppLayout';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { seedLargeData } from '@/db/seed-large';
+
 
 export function DashboardPage() {
   const fetchDashboardData = useStore((state) => state.fetchDashboardData);

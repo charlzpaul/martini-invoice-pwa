@@ -16,7 +16,7 @@ import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
 import type { CanvasImage, CanvasLabel } from '@/db/models';
 import { LayerList } from './LayerList';
-import { ChevronDown, User, Calendar, DollarSign, FileText, List } from 'lucide-react';
+import { ChevronDown, User, Calendar, FileText } from 'lucide-react';
 
 export function SettingsPanel() {
   const {
@@ -26,7 +26,7 @@ export function SettingsPanel() {
     setSelectedItemId,
   } = useTemplateStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
+
 
   const selectedItem = useMemo(() => {
     if (!activeTemplate || !selectedItemId) return null;

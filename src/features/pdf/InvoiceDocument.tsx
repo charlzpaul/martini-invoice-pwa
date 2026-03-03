@@ -1,7 +1,7 @@
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
 import type { Invoice, Template, Customer, CanvasLabel, LineItem } from '@/db/models';
-import { CURRENCY_ICONS, getCurrencyIcon, SYMBOL_TO_ISO } from './currencyIcons';
+import { getCurrencyIcon } from './currencyIcons';
 
 
 
