@@ -1,14 +1,16 @@
 // src/features/pdf/generatePdf.ts
 import type { Invoice, Template, GeneratedPDF } from '@/db/models';
 import * as dbApi from '@/db/api';
-import { pdf } from '@react-pdf/renderer';
-import { InvoiceDocument } from './InvoiceDocument';
 
 export async function generatePdfForInvoice(
     invoice: Invoice,
     template: Template,
     currencySymbol: string = '$'
 ): Promise<Blob> {
+    // Dynamically import react-pdf renderer and InvoiceDocument to avoid static imports
+    const { pdf } = await import('@react-pdf/renderer');
+    const { InvoiceDocument } = await import('./InvoiceDocument');
+
     // Load customer data before generating PDF
     let customer = null;
     if (invoice.customerId) {

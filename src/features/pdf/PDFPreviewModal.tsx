@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import type { Invoice, Template } from '@/db/models';
 import * as dbApi from '@/db/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { X, Download, Share2 } from 'lucide-react';
 import { useStore } from '@/store/useStore';
-import { InvoiceDocument } from './InvoiceDocument';
+
+// Lazy load InvoiceDocument to avoid static imports
+const LazyInvoiceDocument = lazy(() => import('./InvoiceDocument').then(module => ({ default: module.InvoiceDocument })));
 
 interface PDFPreviewModalProps {
   isOpen: boolean;
@@ -43,11 +45,11 @@ export function PDFPreviewModal({ isOpen, onClose, invoice, template }: PDFPrevi
                     
                     const { pdf } = await import('@react-pdf/renderer');
                     const blob = await pdf(
-                        <InvoiceDocument 
-                            invoice={invoice} 
-                            template={template} 
-                            customer={customer} 
-                            currencySymbol={currencySymbol} 
+                        <LazyInvoiceDocument
+                            invoice={invoice}
+                            template={template}
+                            customer={customer}
+                            currencySymbol={currencySymbol}
                         />
                     ).toBlob();
                     
@@ -164,15 +166,23 @@ export function PDFPreviewModal({ isOpen, onClose, invoice, template }: PDFPrevi
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                         </div>
                     ) : pdfUrl ? (
-                        <iframe 
-                            src={pdfUrl} 
-                            className="w-full h-full" 
+                        <iframe
+                            src={pdfUrl}
+                            className="w-full h-full"
                             title="Invoice PDF Preview"
                         />
                     ) : (
-                        <div className="flex items-center justify-center p-8 text-muted-foreground">
-                            Waiting for PDF generation...
-                        </div>
+                        <Suspense fallback={
+                            <div className="flex items-center justify-center p-8">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                            </div>
+                        }>
+                            <iframe
+                                src={pdfUrl || ''}
+                                className="w-full h-full"
+                                title="Invoice PDF Preview"
+                            />
+                        </Suspense>
                     )}
                 </div>
             </DialogContent>

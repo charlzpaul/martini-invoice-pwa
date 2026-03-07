@@ -1,4 +1,5 @@
-import { StrictMode, Suspense, Component } from 'react';
+import { StrictMode, Suspense, Component, useState, useEffect } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -28,9 +29,9 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, { hasError:
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ 
-          padding: '20px', 
-          color: 'red', 
+        <div style={{
+          padding: '20px',
+          color: 'red',
           fontFamily: 'monospace',
           maxWidth: '800px',
           margin: '0 auto'
@@ -43,6 +44,43 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, { hasError:
     }
     return this.props.children;
   }
+}
+
+// Google OAuth Error Boundary to catch "_.md" errors from the library
+function GoogleOAuthErrorBoundary({ children }: { children: React.ReactNode }) {
+  const [hasError, setHasError] = React.useState(false);
+  const [error, setError] = React.useState<Error | null>(null);
+
+  React.useEffect(() => {
+    const handleError = (e: ErrorEvent) => {
+      if (e.message?.includes('_.md')) {
+        console.warn('Google OAuth error suppressed:', e.message);
+        e.preventDefault();
+        setHasError(true);
+        setError(new Error(e.message));
+      }
+    };
+
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
+  if (hasError) {
+    return (
+      <div style={{
+        padding: '20px',
+        color: 'orange',
+        fontFamily: 'monospace',
+        maxWidth: '800px',
+        margin: '0 auto'
+      }}>
+        <h2>Google Authentication</h2>
+        <p>Authentication is temporarily unavailable. Please refresh the page.</p>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
 }
 
 function LoadingFallback() {
@@ -63,17 +101,32 @@ function LoadingFallback() {
   );
 }
 
+// Diagnostic logging
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+console.log('Environment variables:', {
+  VITE_GOOGLE_CLIENT_ID: clientId ? 'Set (length: ' + clientId.length + ')' : 'NOT SET',
+  BASE_URL: import.meta.env.BASE_URL,
+});
+
+// Safety check for missing clientId
+if (!clientId) {
+  console.warn('WARNING: VITE_GOOGLE_CLIENT_ID is not set. Google Drive synchronization will not work.');
+  console.warn('To fix this, add VITE_GOOGLE_CLIENT_ID to your .env file in the project root.');
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Suspense fallback={<LoadingFallback />}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-          <BrowserRouter basename="/martini-records-pwa/">
-            <ErrorBoundary>
-              <App />
-            </ErrorBoundary>
-          </BrowserRouter>
-        </GoogleOAuthProvider>
+        <GoogleOAuthErrorBoundary>
+          <GoogleOAuthProvider clientId={clientId || ''}>
+            <BrowserRouter basename="/martini-records-pwa/">
+              <ErrorBoundary>
+                <App />
+              </ErrorBoundary>
+            </BrowserRouter>
+          </GoogleOAuthProvider>
+        </GoogleOAuthErrorBoundary>
       </ThemeProvider>
     </Suspense>
   </StrictMode>
