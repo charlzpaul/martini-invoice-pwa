@@ -53,7 +53,7 @@ export function LineItemsTable() {
   const allProductOptions = [
     {
       id: 'custom',
-      label: 'Custom item...',
+      label: 'Custom item...', 
       value: 'custom'
     },
     ...productOptions
@@ -435,7 +435,7 @@ export function LineItemsTable() {
                             <div className="flex items-center gap-1">
                               <Input
                                 type="text"
-                                inputMode="decimal"
+                                inputMode="text"
                                 value={adjustmentInputValues[layer.id] !== undefined
                                   ? adjustmentInputValues[layer.id]
                                   : formatNumericValue(activeInvoice.adjustmentValues?.[layer.id] ?? layer.value ?? 0)}
